@@ -1,0 +1,36 @@
+# ─── OS ───
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ─── PHP ───
+/vendor/
+composer.lock
+
+# ─── Node ───
+node_modules/
+package-lock.json
+
+# ─── Environment ───
+.env
+.env.local
+.env.*.local
+
+# ─── IDE ───
+.idea/
+.vscode/
+*.sublime-*
+
+# ─── Mater-Natura ───
+/config/database.php
+/uploads/*
+!/uploads/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# ─── SQLite backup (if any) ───
+*.db
+*.sqlite
+*.png

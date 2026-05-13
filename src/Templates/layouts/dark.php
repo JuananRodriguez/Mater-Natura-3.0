@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <?= $this->renderPartial('head', ['meta' => $meta, 'jsDataScript' => $jsDataScript]) ?>
+</head>
+<body class="theme-dark">
+    <?= $this->renderPartial('header', [
+        'escape' => $escape,
+        'isAuthenticated' => isset($_SESSION['mn_user']),
+    ]) ?>
+
+    <main class="container">
+        <?= $content ?>
+    </main>
+
+    <?= $this->renderPartial('footer', ['escape' => $escape]) ?>
+
+    <script src="/assets/js/alpine.min.js" defer></script>
+    <script src="/assets/js/app.js" defer></script>
+</body>
+</html>

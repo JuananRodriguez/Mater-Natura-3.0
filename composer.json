@@ -1,0 +1,37 @@
+{
+    "name": "maternatura/maternatura",
+    "description": "Mater-Natura — Un clon de WordPress con alma poética",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-fileinfo": "*",
+        "ext-gd": "*"
+    },
+    "require-dev": {
+        "behat/behat": "^3.14",
+        "phpspec/phpspec": "^7.5",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MaterNatura\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MaterNatura\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "spec": "phpspec run",
+        "behat": "behat",
+        "migrate": "php public/index.php migrate"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

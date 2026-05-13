@@ -1,0 +1,17 @@
+/* Mater-Natura — Light Theme (Blog Claro) */
+/* El tema claro es el predeterminado. Solo ajustes finos. */
+
+body.theme-light {
+    background: #faf6f0;
+    color: #2c2416;
+}
+
+/* Overlay background */
+.theme-light .overlay {
+    background-color: #faf6f0 !important;
+}
+
+.theme-light ::selection {
+    background: #8b4513;
+    color: #fff;
+}

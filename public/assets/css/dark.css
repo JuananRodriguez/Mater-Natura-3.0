@@ -1,0 +1,18 @@
+/* Mater-Natura — Dark Theme (Blog Oscuro) */
+/* Con Tailwind, la mayoría de estilos se manejan con clases dark: */
+/* body.theme-dark aplica darkMode: class strategy */
+
+body.theme-dark {
+    background: #1a1a2e;
+    color: #e8e0d4;
+}
+
+/* Overlay background (Tailwind dark:bg-[...] no siempre funciona con fixed overlay) */
+.theme-dark .overlay {
+    background-color: rgba(26, 26, 46, 0.95) !important;
+}
+
+.theme-dark ::selection {
+    background: #d4a574;
+    color: #1a1a2e;
+}

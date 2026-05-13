@@ -1,0 +1,158 @@
+/* base.css — Animación overlay + estilos base del diseño original */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+img { max-width: 100%; height: auto; }
+
+/* Body: diseño original mater-natura.com */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 21px;
+    color: #444;
+    background: #fff;
+}
+body.theme-dark {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+body.theme-light {
+    background: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Overlay Nav */
+.overlay {
+    height: 100%; width: 0;
+    position: fixed; z-index: 99999; right: 0; top: 0;
+    overflow-x: hidden;
+    transition: width 0.5s ease;
+}
+.overlay.open { width: 100%; }
+.closebtn {
+    position: absolute; top: 30px; right: 15%;
+    font-weight: 100; font-size: 45px;
+    cursor: pointer; line-height: 1;
+}
+.overlay .redes { display: flex; justify-content: center; margin-top: 20px; }
+.overlay .redes a { margin: 0; padding: 0; }
+@media (max-width: 600px) { .closebtn { right: 10%; font-size: 35px; } }
+
+/* Admin table */
+.comment-table { width: 100%; border-collapse: collapse; }
+.comment-table th, .comment-table td { text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0; }
+.status-pending { color: #888888; font-weight: bold; }
+.status-approved { color: #1a1a1a; font-weight: bold; }
+.admin-wrap { max-width: 1000px; margin: 0 auto; }
+
+/* ─── Quill Content Output (frontend) ─── */
+.post-texto h1,
+.post-texto h2,
+.post-texto h3,
+.post-texto h4 {
+    font-weight: bold;
+    margin: 1.5em 0 0.5em;
+}
+
+.post-texto h1 { font-size: 1.5rem; }
+.post-texto h2 { font-size: 1.3rem; }
+.post-texto h3 { font-size: 1.1rem; }
+
+.post-texto p {
+    margin-bottom: 0.8em;
+    line-height: 1.7;
+}
+
+.post-texto img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 1.5em 0;
+    display: block;
+}
+
+.post-texto blockquote {
+    border-left: 3px solid #888888;
+    padding: 0.5em 1em;
+    margin: 1.5em 0;
+    background: rgba(0,0,0,0.03);
+    font-style: italic;
+}
+
+.theme-dark .post-texto blockquote {
+    border-left-color: #888888;
+    background: rgba(255,255,255,0.03);
+    color: #aaaaaa;
+}
+
+.post-texto pre {
+    background: #f0f0f0;
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+}
+
+.theme-dark .post-texto pre {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+.post-texto a {
+    color: #2d2d2d;
+    text-decoration: underline;
+}
+
+.theme-dark .post-texto a {
+    color: #cccccc;
+}
+
+.post-texto ul,
+.post-texto ol {
+    margin: 0.5em 0 1em 1.5em;
+    line-height: 1.7;
+}
+
+.post-texto li {
+    margin-bottom: 0.3em;
+}
+
+.post-texto table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+.post-texto th,
+.post-texto td {
+    border: 1px solid #e0e0e0;
+    padding: 0.5em;
+    text-align: left;
+}
+
+.theme-dark .post-texto th,
+.theme-dark .post-texto td {
+    border-color: #333333;
+}
+
+.post-texto th {
+    background: #f0f0f0;
+    font-weight: bold;
+}
+
+.theme-dark .post-texto th {
+    background: #2d2d2d;
+}
+
+.post-texto hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 2em 0;
+}
+
+.theme-dark .post-texto hr {
+    border-top-color: #333333;
+}

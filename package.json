@@ -1,0 +1,7 @@
+{
+  "name": "mater-natura",
+  "private": true,
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

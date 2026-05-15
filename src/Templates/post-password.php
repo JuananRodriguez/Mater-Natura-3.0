@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="mx-auto max-w-md px-4 py-16 text-center">
     <h1 class="text-3xl font-bold mb-2"><?= $escape($post['title']) ?></h1>
     <p class="text-sm text-gray-500 mb-8">Este contenido está protegido con contraseña.</p>

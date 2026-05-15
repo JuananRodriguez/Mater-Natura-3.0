@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <footer id="footer-wrapper" class="clear-both py-2.5 px-0 text-center leading-[1.5em] bg-white dark:bg-transparent">
     <div class="max-w-content mx-auto">
         <hr class="border-t border-gray-200 dark:border-[#333333] my-2.5">

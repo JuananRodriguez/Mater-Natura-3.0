@@ -8,17 +8,15 @@ use MaterNatura\Plugins\PluginInterface as PluginContract;
 
 class PluginManager
 {
-    private Database $db;
-    private Security $security;
-    private ?Auth $auth = null;
     private string $pluginsDir;
     private array $activePlugins = [];
 
-    public function __construct(Database $db, Security $security, ?Auth $auth = null, ?string $pluginsDir = null)
-    {
-        $this->db = $db;
-        $this->security = $security;
-        $this->auth = $auth;
+    public function __construct(
+        private Database $db,
+        private Security $security,
+        private ?Auth $auth = null,
+        ?string $pluginsDir = null,
+    ) {
         $this->pluginsDir = $pluginsDir ?? MATER_PLUGINS_DIR;
     }
 
@@ -136,26 +134,35 @@ class PluginManager
         $existing = $this->db->fetchOne("SELECT id FROM plugins WHERE slug = ?", [$slug]);
 
         if ($existing) {
-            $this->db->update('plugins', ['enabled' => true], 'slug = ?', [$slug]);
+            $this->db->update('plugins', ['enabled' => 1], 'slug = ?', [$slug]);
         } else {
             $this->db->insert('plugins', [
                 'name' => $meta['name'] ?? $slug,
                 'slug' => $slug,
                 'version' => $meta['version'] ?? '1.0.0',
                 'description' => $meta['description'] ?? '',
-                'enabled' => true,
+                'enabled' => 1,
             ]);
         }
 
         $pluginRecord = $this->db->fetchOne("SELECT id FROM plugins WHERE slug = ?", [$slug]);
         if ($pluginRecord) {
+            $pluginId = (int) $pluginRecord['id'];
+            // Solo insertar hooks si no existen ya (ej. reactivación tras deactivación conservadora)
+            $existingHooks = $this->db->fetchAll(
+                "SELECT hook_name FROM plugin_hooks WHERE plugin_id = ?",
+                [$pluginId]
+            );
+            $existingNames = array_column($existingHooks, 'hook_name');
             $hooks = $plugin->registerHooks();
             foreach ($hooks as $hook) {
-                $this->db->insert('plugin_hooks', [
-                    'plugin_id' => (int) $pluginRecord['id'],
-                    'hook_name' => $hook['hook'],
-                    'priority' => $hook['priority'] ?? 10,
-                ]);
+                if (!in_array($hook['hook'], $existingNames, true)) {
+                    $this->db->insert('plugin_hooks', [
+                        'plugin_id' => $pluginId,
+                        'hook_name' => $hook['hook'],
+                        'priority' => $hook['priority'] ?? 10,
+                    ]);
+                }
             }
         }
 
@@ -177,8 +184,8 @@ class PluginManager
 
         $record = $this->db->fetchOne("SELECT id FROM plugins WHERE slug = ?", [$slug]);
         if ($record) {
-            $this->db->update('plugins', ['enabled' => false], 'id = ?', [(int) $record['id']]);
-            $this->db->delete('plugin_hooks', 'plugin_id = ?', [(int) $record['id']]);
+            $this->db->update('plugins', ['enabled' => 0], 'id = ?', [(int) $record['id']]);
+            // Los hooks se conservan en la BD — executeHook() filtra por p.enabled = TRUE
         }
 
         return true;

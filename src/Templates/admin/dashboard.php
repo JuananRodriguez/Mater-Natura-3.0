@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="admin-wrapper">
     <h1>Dashboard</h1>
 

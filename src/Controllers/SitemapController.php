@@ -8,11 +8,8 @@ use MaterNatura\Core\Database;
 
 class SitemapController
 {
-    private Database $db;
-
-    public function __construct(Database $db)
+    public function __construct(private Database $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -91,45 +88,56 @@ class SitemapController
         $baseUrl = rtrim(MATER_BASE_URL, '/');
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
 
-        // Home
-        $xml .= $this->urlEntry($baseUrl . '/', date('Y-m-d'), '1.0');
+        // Home — daily
+        $xml .= $this->urlEntry($baseUrl . '/', date('Y-m-d'), '1.0', 'daily');
 
-        // Posts publicados
+        // Posts publicados — weekly, con imagen destacada
         $posts = $this->db->fetchAll(
-            "SELECT slug, updated_at FROM posts WHERE status = 'published' AND visibility = 'public' ORDER BY published_at DESC"
+            "SELECT slug, image_url, updated_at FROM posts WHERE status = 'published' AND visibility = 'public' ORDER BY published_at DESC"
         );
         foreach ($posts as $post) {
             $lastmod = $post['updated_at'] ? date('Y-m-d', strtotime($post['updated_at'])) : date('Y-m-d');
-            $xml .= $this->urlEntry($baseUrl . '/' . $post['slug'], $lastmod, '0.6');
+            $imageUrl = $post['image_url'] ? $baseUrl . '/media/' . ltrim($post['image_url'], '/') : null;
+            $xml .= $this->urlEntry($baseUrl . '/' . $post['slug'], $lastmod, '0.6', 'weekly', $imageUrl);
         }
 
-        // Páginas publicadas
+        // Páginas publicadas — monthly
         $pages = $this->db->fetchAll(
             "SELECT slug, updated_at, is_home FROM pages WHERE status = 'published' ORDER BY updated_at DESC"
         );
         foreach ($pages as $page) {
             $lastmod = $page['updated_at'] ? date('Y-m-d', strtotime($page['updated_at'])) : date('Y-m-d');
-            $xml .= $this->urlEntry($baseUrl . '/' . $page['slug'], $lastmod, '0.8');
+            $xml .= $this->urlEntry($baseUrl . '/' . $page['slug'], $lastmod, '0.8', 'monthly');
         }
 
-        // Listado de posts
-        $xml .= $this->urlEntry($baseUrl . '/post', date('Y-m-d'), '0.5');
+        // Listado de posts — daily
+        $xml .= $this->urlEntry($baseUrl . '/post', date('Y-m-d'), '0.5', 'daily');
 
         $xml .= '</urlset>';
 
         return $xml;
     }
 
-    private function urlEntry(string $loc, string $lastmod, string $priority): string
+    private function urlEntry(string $loc, string $lastmod, string $priority, string $changefreq = 'weekly', ?string $imageUrl = null): string
     {
         $escapedLoc = htmlspecialchars($loc, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
-        return "  <url>\n"
+        $entry = "  <url>\n"
              . "    <loc>{$escapedLoc}</loc>\n"
              . "    <lastmod>{$lastmod}</lastmod>\n"
-             . "    <priority>{$priority}</priority>\n"
-             . "  </url>\n";
+             . "    <changefreq>{$changefreq}</changefreq>\n"
+             . "    <priority>{$priority}</priority>\n";
+
+        if ($imageUrl) {
+            $escapedImg = htmlspecialchars($imageUrl, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            $entry .= "    <image:image>\n"
+                   . "      <image:loc>{$escapedImg}</image:loc>\n"
+                   . "    </image:image>\n";
+        }
+
+        $entry .= "  </url>\n";
+        return $entry;
     }
 }

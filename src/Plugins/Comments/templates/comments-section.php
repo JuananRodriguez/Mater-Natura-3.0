@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Comments Plugin — Sección de comentarios (estilo WordPress)
  * Renderizada tras el contenido del post.

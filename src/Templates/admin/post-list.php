@@ -1,6 +1,6 @@
+<?php declare(strict_types=1); ?>
 <div class="admin-wrapper" x-data="postList()">
     <div class="admin-header">
-        <h1>Posts</h1>
         <a href="/admin/posts/editar" class="btn btn-primary"><?= svg_icon('plus') ?> Nuevo post</a>
     </div>
 

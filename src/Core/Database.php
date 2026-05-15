@@ -11,11 +11,10 @@ use PDOStatement;
 class Database
 {
     private PDO $pdo;
-    private array $config;
 
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        private array $config,
+    ) {
         $this->connect();
     }
 

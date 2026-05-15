@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,12 +21,26 @@
                 <a href="/admin" class="sidebar-link<?= ($currentNav ?? '') === 'dashboard' ? ' active' : '' ?>"><?= svg_icon('speedometer') ?> Dashboard</a>
                 <a href="/admin/posts" class="sidebar-link<?= ($currentNav ?? '') === 'posts' ? ' active' : '' ?>"><?= svg_icon('pencil') ?> Posts</a>
                 <a href="/admin/pages" class="sidebar-link<?= ($currentNav ?? '') === 'pages' ? ' active' : '' ?>"><?= svg_icon('file') ?> Paginas</a>
-                <a href="/admin/comments" class="sidebar-link<?= ($currentNav ?? '') === 'comments' ? ' active' : '' ?>"><?= svg_icon('comment-bubble') ?> Comentarios</a>
+
+                <!-- Plugins activos -->
+                <?php if (!empty($pluginMenuItems)): ?>
+                    <?php foreach ($pluginMenuItems as $item): ?>
+                        <?php
+                        $itemUrl = $escape($item['url']);
+                        $itemIcon = !empty($item['icon']) ? svg_icon($item['icon']) : svg_icon('puzzle');
+                        $itemLabel = $escape($item['label'] ?? 'Plugin');
+                        $itemSlug = trim(str_replace('admin/', '', parse_url($item['url'], PHP_URL_PATH)), '/');
+                        ?>
+                        <a href="<?= $itemUrl ?>" class="sidebar-link<?= ($currentNav ?? '') === $itemSlug ? ' active' : '' ?>"><?= $itemIcon ?> <?= $itemLabel ?></a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
                 <?php if (($user['role'] ?? '') === 'admin'): ?>
                 <a href="/admin/usuarios" class="sidebar-link<?= ($currentNav ?? '') === 'users' ? ' active' : '' ?>"><?= svg_icon('people') ?> Usuarios</a>
                 <a href="/admin/plugins" class="sidebar-link<?= ($currentNav ?? '') === 'plugins' ? ' active' : '' ?>"><?= svg_icon('puzzle') ?> Plugins</a>
                 <a href="/admin/ajustes" class="sidebar-link<?= ($currentNav ?? '') === 'settings' ? ' active' : '' ?>"><?= svg_icon('cog') ?> Ajustes</a>
                 <?php endif; ?>
+
                 <hr class="sidebar-divider">
                 <a href="/" class="sidebar-link"><?= svg_icon('globe-alt') ?> Ver sitio</a>
                 <a href="/logout" class="sidebar-link"><?= svg_icon('account-logout') ?> Salir</a>

@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="admin-wrapper">
     <div class="admin-header">
         <h1>Usuarios</h1>

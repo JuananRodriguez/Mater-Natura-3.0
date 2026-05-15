@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS analytics_pageviews (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    session_id VARCHAR(36) NOT NULL,
+    visitor_ip VARBINARY(16) NOT NULL,
+    user_agent TEXT DEFAULT NULL,
+    page_url VARCHAR(500) NOT NULL,
+    page_title VARCHAR(255) DEFAULT NULL,
+    referer_url VARCHAR(500) DEFAULT NULL,
+    referer_type VARCHAR(20) DEFAULT NULL COMMENT 'direct|external|search|internal',
+    query_string VARCHAR(500) DEFAULT NULL,
+    time_on_page_seconds INT UNSIGNED DEFAULT 0,
+    is_entry TINYINT(1) DEFAULT 0,
+    is_exit TINYINT(1) DEFAULT 0,
+    exit_url VARCHAR(500) DEFAULT NULL,
+    visited_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updated_at DATETIME(3) DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(3),
+    INDEX idx_session (session_id),
+    INDEX idx_visited_at (visited_at),
+    INDEX idx_page_url (page_url(191))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

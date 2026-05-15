@@ -6,11 +6,9 @@ namespace MaterNatura\Core;
 
 class UploadHandler
 {
-    private Security $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
+    public function __construct(
+        private Security $security,
+    ) {
     }
 
     /**

@@ -1,7 +1,17 @@
+<?php declare(strict_types=1); ?>
 <div class="post-entry font-titillium text-sm text-black dark:text-[#e0e0e0] pt-10 pr-5 pb-0 pl-0 clear-both max-w-content mx-auto" itemscope itemtype="https://schema.org/BlogPosting">
+    <?= $this->renderBreadcrumbs() ?>
     <?php if (!empty($post['image_url'])): ?>
         <div class="post-image clear-both block float-none mb-[10px]">
-            <img class="image-image" src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>" alt="<?= $escape($post['title']) ?>" itemprop="image" style="display: block; max-width: 100%; height: auto;">
+            <img class="image-image"
+                 src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>"
+                 alt="<?= $escape($post['title']) ?>"
+                 <?php if ($imageWidth && $imageHeight): ?>
+                 width="<?= $imageWidth ?>"
+                 height="<?= $imageHeight ?>"
+                 <?php endif; ?>
+                 itemprop="image"
+                 style="display: block; max-width: 100%; height: auto;">
         </div>
     <?php endif; ?>
 

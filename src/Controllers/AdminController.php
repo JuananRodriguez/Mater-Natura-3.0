@@ -6,20 +6,14 @@ namespace MaterNatura\Controllers;
 
 use MaterNatura\Core\Auth;
 use MaterNatura\Core\Database;
+use MaterNatura\Core\PluginManager;
 use MaterNatura\Core\Security;
 use MaterNatura\Core\Template;
 
 class AdminController
 {
-    private Database $db;
-    private Security $security;
-    private Auth $auth;
-
-    public function __construct(Database $db, Security $security, Auth $auth)
+    public function __construct(private Database $db, private Security $security, private Auth $auth, private ?PluginManager $pluginManager = null)
     {
-        $this->db = $db;
-        $this->security = $security;
-        $this->auth = $auth;
     }
 
     // ─── Dashboard ───
@@ -32,10 +26,22 @@ class AdminController
             "SELECT COUNT(*) as cnt FROM posts WHERE status = 'draft'"
         )['cnt'] ?? 0;
 
+        // Recolectar widgets de plugins
+        $dashboardWidgets = [];
+        if ($this->pluginManager) {
+            $widgetResults = $this->pluginManager->executeHook('admin.dashboard.widgets', []);
+            foreach ($widgetResults as $result) {
+                if (is_array($result) && isset($result['title'])) {
+                    $dashboardWidgets[] = $result;
+                }
+            }
+        }
+
         return $this->renderAdmin('dashboard', [
             'postCount' => $postCount,
             'pageCount' => $pageCount,
             'draftCount' => $draftCount,
+            'dashboardWidgets' => $dashboardWidgets,
             'currentNav' => 'dashboard',
         ]);
     }
@@ -132,7 +138,7 @@ class AdminController
 
         // Validar slug único (excluyendo el propio post si es edición)
         $existing = $this->db->fetchOne(
-            "SELECT id FROM posts WHERE slug = ? AND (id IS NULL OR id != ?) LIMIT 1",
+            "SELECT id FROM posts WHERE slug = ? AND id != ? LIMIT 1",
             $id ? [$slug, $id] : [$slug, 0]
         );
         if ($existing) {
@@ -185,6 +191,10 @@ class AdminController
             $imageUrl = $oldImageUrl;
         }
 
+        // Meta SEO
+        $metaTitle = trim($data['meta_title'] ?? '');
+        $metaDescription = trim($data['meta_description'] ?? '');
+
         $postData = [
             'title' => $title,
             'slug' => $slug,
@@ -192,6 +202,8 @@ class AdminController
             'template' => $template,
             'status' => $status,
             'visibility' => $visibility,
+            'meta_title' => $metaTitle !== '' ? $metaTitle : null,
+            'meta_description' => $metaDescription !== '' ? $metaDescription : null,
         ];
 
         if ($visibilityPassword !== null) {
@@ -306,8 +318,16 @@ class AdminController
             $slug = $this->security->sanitizeSlug($slug);
         }
 
+        // Solo comprobar slug reservado si es nuevo o ha cambiado
         if ($this->security->isReservedSlug($slug)) {
-            $errors[] = "'{$slug}' es un slug reservado por el sistema.";
+            if (!$id) {
+                $errors[] = "'{$slug}' es un slug reservado por el sistema.";
+            } else {
+                $current = $this->db->fetchOne("SELECT slug FROM pages WHERE id = ?", [$id]);
+                if (!$current || $current['slug'] !== $slug) {
+                    $errors[] = "'{$slug}' es un slug reservado por el sistema.";
+                }
+            }
         }
 
         // Slug único entre pages
@@ -325,12 +345,18 @@ class AdminController
             exit;
         }
 
+        // Meta SEO
+        $metaTitle = trim($data['meta_title'] ?? '');
+        $metaDescription = trim($data['meta_description'] ?? '');
+
         $pageData = [
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
             'template' => $template,
             'status' => $status,
+            'meta_title' => $metaTitle !== '' ? $metaTitle : null,
+            'meta_description' => $metaDescription !== '' ? $metaDescription : null,
         ];
 
         if ($id) {
@@ -393,6 +419,62 @@ class AdminController
             'plugins' => $plugins,
             'currentNav' => 'plugins',
         ]);
+    }
+
+    /**
+     * Activa un plugin por slug.
+     */
+    public function pluginActivate(string $slug): void
+    {
+        if (!$this->security->validateCsrfToken($_POST['_csrf_token'] ?? '')) {
+            $_SESSION['admin_error'] = 'Token de seguridad inválido.';
+            header('Location: /admin/plugins');
+            exit;
+        }
+
+        if ($this->pluginManager === null) {
+            $_SESSION['admin_error'] = 'El sistema de plugins no está disponible.';
+            header('Location: /admin/plugins');
+            exit;
+        }
+
+        $success = $this->pluginManager->activate($slug);
+        if ($success) {
+            $_SESSION['admin_success'] = 'Plugin activado correctamente.';
+        } else {
+            $_SESSION['admin_error'] = 'No se pudo activar el plugin.';
+        }
+
+        header('Location: /admin/plugins');
+        exit;
+    }
+
+    /**
+     * Desactiva un plugin por slug.
+     */
+    public function pluginDeactivate(string $slug): void
+    {
+        if (!$this->security->validateCsrfToken($_POST['_csrf_token'] ?? '')) {
+            $_SESSION['admin_error'] = 'Token de seguridad inválido.';
+            header('Location: /admin/plugins');
+            exit;
+        }
+
+        if ($this->pluginManager === null) {
+            $_SESSION['admin_error'] = 'El sistema de plugins no está disponible.';
+            header('Location: /admin/plugins');
+            exit;
+        }
+
+        $success = $this->pluginManager->deactivate($slug);
+        if ($success) {
+            $_SESSION['admin_success'] = 'Plugin desactivado correctamente.';
+        } else {
+            $_SESSION['admin_error'] = 'No se pudo desactivar el plugin.';
+        }
+
+        header('Location: /admin/plugins');
+        exit;
     }
 
     // ─── Settings ───
@@ -711,7 +793,11 @@ class AdminController
 
     // ─── Privados ───
 
-    private function renderAdmin(string $view, array $data = []): string
+    /**
+     * Renderiza una página del admin con el layout completo.
+     * Incluye dinámicamente los items del menú de plugins activos.
+     */
+    public function renderAdmin(string $view, array $data = []): string
     {
         $template = new Template($this->security);
         $template->setMetaTitle(ucfirst($view) . ' — ' . MATER_SITE_NAME);
@@ -725,6 +811,17 @@ class AdminController
         $template->exposeToJs('adminSuccess', $adminSuccess);
 
         unset($_SESSION['admin_error'], $_SESSION['admin_success']);
+
+        // Recolectar items del menú de plugins activos vía hook
+        $pluginMenuItems = [];
+        if ($this->pluginManager) {
+            $menuResults = $this->pluginManager->executeHook('admin.menu.add', []);
+            foreach ($menuResults as $result) {
+                if (is_array($result) && isset($result['url'])) {
+                    $pluginMenuItems[] = $result;
+                }
+            }
+        }
 
         // Renderizar la vista de contenido
         $viewFile = MATER_TEMPLATES_DIR . '/admin/' . $view . '.php';
@@ -740,6 +837,7 @@ class AdminController
         $meta = $template->getMeta();
         $jsDataScript = $template->getJsDataScript();
         $escape = [$template, 'escapeHtml'];
+        $pageTitle = $meta['title'] ?? 'Dashboard';
         ob_start();
         require $layoutFile;
         return ob_get_clean();

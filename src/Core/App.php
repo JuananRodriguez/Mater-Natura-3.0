@@ -12,8 +12,10 @@ class App
     private Router $router;
     private PluginManager $pluginManager;
 
-    public function __construct(array $config, array $dbConfig)
-    {
+    public function __construct(
+        private array $config,
+        private array $dbConfig,
+    ) {
         // Inicializar sesión segura
         $this->initSession();
 
@@ -51,6 +53,16 @@ class App
         // Dispatch de la ruta
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        // Hook: notificar a plugins que se está cargando una página
+        $this->pluginManager?->executeHook('page.viewed', [
+            'page_url'     => $uri,
+            'method'       => $method,
+            'referer'      => $_SERVER['HTTP_REFERER'] ?? null,
+            'ip'           => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent'   => $_SERVER['HTTP_USER_AGENT'] ?? null,
+            'query_string' => $_SERVER['QUERY_STRING'] ?? null,
+        ]);
 
         try {
             $this->router->dispatch($method, $uri);

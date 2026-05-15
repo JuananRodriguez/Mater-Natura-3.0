@@ -10,13 +10,8 @@ use MaterNatura\Core\Template;
 
 class AuthController
 {
-    private Auth $auth;
-    private Security $security;
-
-    public function __construct(Auth $auth, Security $security)
+    public function __construct(private Auth $auth, private Security $security)
     {
-        $this->auth = $auth;
-        $this->security = $security;
     }
 
     /**

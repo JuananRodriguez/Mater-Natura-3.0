@@ -6,15 +6,12 @@ namespace MaterNatura\Core;
 
 class Auth
 {
-    private Database $db;
-    private Security $security;
-
     private const SESSION_USER_KEY = 'mn_user';
 
-    public function __construct(Database $db, Security $security)
-    {
-        $this->db = $db;
-        $this->security = $security;
+    public function __construct(
+        private Database $db,
+        private Security $security,
+    ) {
     }
 
     /**

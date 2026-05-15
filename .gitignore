@@ -34,3 +34,8 @@ package-lock.json
 *.db
 *.sqlite
 *.png
+
+# ─── Hermes Agent ───
+.agents/
+.hermes/
+skills-lock.json

@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="error-page">
     <div class="error-content">
         <h1>Error</h1>

@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="post-editor">
     <!-- Form principal para crear/editar usuario -->
     <form method="POST" action="/admin/usuarios/editar" id="user-form">

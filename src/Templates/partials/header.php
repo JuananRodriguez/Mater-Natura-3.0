@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div id="header" x-data="{ overlayOpen: false }" class="relative text-center">
     <!-- Logo centrado -->
     <div class="pt-4">

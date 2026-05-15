@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="admin-page-comments">
     <div class="page-header">
         <h1><?= svg_icon('comment-bubble') ?> Comentarios</h1>

@@ -9,11 +9,9 @@ class Security
     private const CSRF_TOKEN_LENGTH = 32;
     private const SALT_LENGTH = 16;
 
-    private Database $db;
-
-    public function __construct(Database $db)
-    {
-        $this->db = $db;
+    public function __construct(
+        private Database $db,
+    ) {
     }
 
     // ─── CSRF ───

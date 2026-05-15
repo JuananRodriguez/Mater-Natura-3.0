@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="mx-auto max-w-md px-4 py-16 text-center">
     <h1 class="text-3xl font-bold mb-2">Acceso restringido</h1>
     <p class="text-gray-500 mb-8"><?= $escape($message ?? 'No tienes permiso para acceder a este contenido.') ?></p>

@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <div class="post-editor" x-data="postForm()">
     <!-- Editor Header / Actions -->
     <div class="editor-header">
@@ -30,6 +31,7 @@
                 <input type="text" id="title" name="title" required
                        value="<?= $escape($post->title ?? '') ?>"
                        @input.debounce="generateSlug()"
+                       @input="updateSEOPreview()"
                        placeholder="Título del post..."
                        class="editor-title" autofocus>
 
@@ -106,7 +108,8 @@
                         <input type="text" id="slug" name="slug"
                                value="<?= $escape($post->slug ?? '') ?>"
                                placeholder="post-title-slug"
-                               class="brutalist-input">
+                               class="brutalist-input"
+                               @input="updateSEOPreview()">
                     </div>
                 </div>
             </div>
@@ -117,29 +120,39 @@
                 <div class="settings-field">
                     <div class="settings-field-header">
                         <label for="meta-title">Meta Title</label>
-                        <span class="meta-counter">0/60</span>
+                        <span class="meta-counter" id="meta-title-counter"><?= strlen($post->metaTitle ?? '') ?>/60</span>
                     </div>
                     <input type="text" id="meta-title" name="meta_title"
-                           value="<?= $escape($post->meta_title ?? '') ?>"
+                           value="<?= $escape($post->metaTitle ?? '') ?>"
                            placeholder="Título optimizado" class="brutalist-input"
-                           @input="updateSEOPreview()">
+                           @input="updateSEOPreview()"
+                           oninput="updateMetaCounters()">
                 </div>
                 <div class="settings-field">
                     <div class="settings-field-header">
                         <label for="meta-desc">Meta Descripción</label>
-                        <span class="meta-counter">0/160</span>
+                        <span class="meta-counter" id="meta-desc-counter"><?= strlen($post->metaDescription ?? '') ?>/160</span>
                     </div>
                     <textarea id="meta-desc" name="meta_description"
                               placeholder="Resumen atractivo del post…"
                               class="brutalist-input" style="height:100px;resize:none"
-                              @input="updateSEOPreview()"><?= $escape($post->meta_description ?? '') ?></textarea>
+                              @input="updateSEOPreview()"
+                              oninput="updateMetaCounters()"><?= $escape($post->metaDescription ?? '') ?></textarea>
                 </div>
                 <!-- SEO Preview -->
                 <div class="seo-preview" id="seo-preview">
-                    <p style="font-family:'Inter',sans-serif;font-size:12px;color:#5e5e5e;text-transform:uppercase;font-weight:bold;margin:0 0 4px">Vista previa</p>
-                    <p class="seo-preview-title" id="seo-title-preview"><?= $escape($post->title ?? 'Título del post') ?> — <?= $escape(MATER_SITE_NAME) ?></p>
-                    <p class="seo-preview-url" id="seo-url-preview">https://tusitio.com/post/<?= $escape($post->slug ?? 'post-title') ?></p>
-                    <p class="seo-preview-desc" id="seo-desc-preview"><?= $escape($post->meta_description ?? 'Resumen del post que aparecerá en los resultados de búsqueda.') ?></p>
+                    <p style="font-family:'Inter',sans-serif;font-size:12px;color:#5e5e5e;text-transform:uppercase;font-weight:bold;margin:0 0 4px">Vista previa de búsqueda</p>
+                    <p class="seo-preview-title" id="seo-title-preview"><?= $escape($post->metaTitle ?: ($post->title ?? 'Título del post') . ' — ' . MATER_SITE_NAME) ?></p>
+                    <p class="seo-preview-url" id="seo-url-preview"><?= rtrim(MATER_BASE_URL, '/') ?>/<?= $escape($post->slug ?? 'post-title') ?></p>
+                    <p class="seo-preview-desc" id="seo-desc-preview"><?= $escape($post->metaDescription ?: 'Resumen del post que aparecerá en los resultados de búsqueda.') ?></p>
+                    <div class="seo-indicators" style="margin-top:8px;font-size:11px;display:flex;gap:12px">
+                        <span id="seo-title-indicator" style="color:<?= (strlen($post->metaTitle ?? '') > 60) ? '#e53e3e' : ((strlen($post->metaTitle ?? '') >= 30) ? '#38a169' : '#dd6b20') ?>">
+                            ● Título: <?= (strlen($post->metaTitle ?? '') > 60) ? 'demasiado largo' : ((strlen($post->metaTitle ?? '') >= 30) ? 'óptimo' : 'corto') ?>
+                        </span>
+                        <span id="seo-desc-indicator" style="color:<?= (strlen($post->metaDescription ?? '') > 160) ? '#e53e3e' : ((strlen($post->metaDescription ?? '') >= 120) ? '#38a169' : ((strlen($post->metaDescription ?? '') > 0) ? '#dd6b20' : '#718096')) ?>">
+                            ● Descripción: <?= (strlen($post->metaDescription ?? '') > 160) ? 'demasiado larga' : ((strlen($post->metaDescription ?? '') >= 120) ? 'óptima' : ((strlen($post->metaDescription ?? '') > 0) ? 'corta' : 'sin definir')) ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -194,12 +207,64 @@ function postForm() {
             const metaDesc = document.getElementById('meta-desc')?.value || '';
 
             document.getElementById('seo-title-preview').textContent = metaTitle + ' — <?= addslashes(MATER_SITE_NAME) ?>';
-            document.getElementById('seo-url-preview').textContent = 'https://tusitio.com/post/' + slug;
+            document.getElementById('seo-url-preview').textContent = '<?= addslashes(rtrim(MATER_BASE_URL, '/')) ?>/' + slug;
 
             const descEl = document.getElementById('seo-desc-preview');
             descEl.textContent = metaDesc || 'Resumen del post que aparecerá en los resultados de búsqueda.';
+
+            // Actualizar indicadores de calidad SEO
+            updateMetaCounters();
         }
     };
+}
+
+function updateMetaCounters() {
+    // Contadores
+    const mt = document.getElementById('meta-title');
+    const md = document.getElementById('meta-desc');
+    if (mt) {
+        const len = mt.value.length;
+        document.getElementById('meta-title-counter').textContent = len + '/60';
+        mt.style.borderColor = len > 60 ? '#e53e3e' : (len >= 30 ? '#38a169' : '#dd6b20');
+    }
+    if (md) {
+        const len = md.value.length;
+        document.getElementById('meta-desc-counter').textContent = len + '/160';
+        md.style.borderColor = len > 160 ? '#e53e3e' : (len >= 120 ? '#38a169' : (len > 0 ? '#dd6b20' : ''));
+    }
+
+    // Indicadores de calidad
+    const titleInd = document.getElementById('seo-title-indicator');
+    const descInd = document.getElementById('seo-desc-indicator');
+    if (titleInd) {
+        const len = mt ? mt.value.length : 0;
+        if (len > 60) {
+            titleInd.style.color = '#e53e3e';
+            titleInd.textContent = '● Título: demasiado largo';
+        } else if (len >= 30) {
+            titleInd.style.color = '#38a169';
+            titleInd.textContent = '● Título: óptimo';
+        } else {
+            titleInd.style.color = '#dd6b20';
+            titleInd.textContent = '● Título: corto';
+        }
+    }
+    if (descInd) {
+        const len = md ? md.value.length : 0;
+        if (len > 160) {
+            descInd.style.color = '#e53e3e';
+            descInd.textContent = '● Descripción: demasiado larga';
+        } else if (len >= 120) {
+            descInd.style.color = '#38a169';
+            descInd.textContent = '● Descripción: óptima';
+        } else if (len > 0) {
+            descInd.style.color = '#dd6b20';
+            descInd.textContent = '● Descripción: corta';
+        } else {
+            descInd.style.color = '#718096';
+            descInd.textContent = '● Descripción: sin definir';
+        }
+    }
 }
 
 // Visibilidad: mostrar/ocultar campo de contraseña

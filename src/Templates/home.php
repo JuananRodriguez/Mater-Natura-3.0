@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <article class="max-w-content mx-auto font-titillium" x-data="{ showContent: true }">
     <?php if ($page): ?>
         <header class="mb-8">

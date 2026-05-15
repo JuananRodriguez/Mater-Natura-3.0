@@ -1,3 +1,4 @@
+<?php declare(strict_types=1); ?>
 <article class="max-w-content mx-auto font-titillium">
     <header class="mb-8">
         <h1 class="text-[28px] font-normal text-black dark:text-[#e0e0e0] mb-1">Poemas</h1>

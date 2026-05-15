@@ -8,20 +8,14 @@ class Router
 {
     private array $getRoutes = [];
     private array $postRoutes = [];
-    private $slugHandler = null;
+    private mixed $slugHandler = null;
 
-    private Auth $auth;
-    private Security $security;
-    private Database $db;
-    private ?PluginManager $pluginManager = null;
-
-    public function __construct(Auth $auth, Security $security, Database $db, ?PluginManager $pluginManager = null)
-    {
-        $this->auth = $auth;
-        $this->security = $security;
-        $this->db = $db;
-        $this->pluginManager = $pluginManager;
-
+    public function __construct(
+        private Auth $auth,
+        private Security $security,
+        private Database $db,
+        private ?PluginManager $pluginManager = null,
+    ) {
         $this->registerRoutes();
     }
 
@@ -88,7 +82,7 @@ class Router
     {
         // Home
         $this->get('/', function () {
-            $controller = new \MaterNatura\Controllers\HomeController($this->db, $this->security);
+            $controller = new \MaterNatura\Controllers\HomeController($this->db, $this->security, $this->pluginManager);
             echo $controller->index();
         });
 
@@ -121,121 +115,147 @@ class Router
         // Admin panel
         $this->get('/admin', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->dashboard();
         });
 
         // Admin posts
         $this->get('/admin/posts', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->postList();
         });
 
         $this->get('/admin/posts/editar', function () {
             $this->auth->requireAuth();
             $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->postForm($id);
         });
 
         $this->post('/admin/posts/editar', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->postSave($_POST);
         });
 
         $this->post('/admin/posts/eliminar', function () {
             $this->auth->requireAuth();
             $id = (int) ($_POST['id'] ?? 0);
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->postDelete($id);
         });
 
         // Admin pages
         $this->get('/admin/pages', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->pageList();
         });
 
         $this->get('/admin/pages/editar', function () {
             $this->auth->requireAuth();
             $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->pageForm($id);
         });
 
         $this->post('/admin/pages/editar', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->pageSave($_POST);
         });
 
         $this->post('/admin/pages/eliminar', function () {
             $this->auth->requireAuth();
             $id = (int) ($_POST['id'] ?? 0);
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->pageDelete($id);
         });
 
         // AJAX upload de imagenes para el editor
         $this->post('/admin/upload-image', function () {
             $this->auth->requireAuth();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->uploadImage();
         });
 
         // Admin plugins (solo administradores)
         $this->get('/admin/plugins', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->plugins();
+        });
+
+        // Activar plugin
+        $this->post('/admin/plugins/activar', function () {
+            $this->auth->requireAdmin();
+            $slug = trim($_POST['slug'] ?? '');
+            if ($slug === '') {
+                $_SESSION['admin_error'] = 'Slug de plugin no especificado.';
+                header('Location: /admin/plugins');
+                exit;
+            }
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
+            $controller->pluginActivate($slug);
+        });
+
+        // Desactivar plugin
+        $this->post('/admin/plugins/desactivar', function () {
+            $this->auth->requireAdmin();
+            $slug = trim($_POST['slug'] ?? '');
+            if ($slug === '') {
+                $_SESSION['admin_error'] = 'Slug de plugin no especificado.';
+                header('Location: /admin/plugins');
+                exit;
+            }
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
+            $controller->pluginDeactivate($slug);
         });
 
         // Admin settings (solo administradores)
         $this->get('/admin/ajustes', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->settings();
         });
 
         $this->post('/admin/ajustes', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->saveSettings($_POST);
         });
 
         // Admin usuarios (solo administradores)
         $this->get('/admin/usuarios', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->userList();
         });
 
         $this->get('/admin/usuarios/editar', function () {
             $this->auth->requireAdmin();
             $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->userForm($id);
         });
 
         $this->post('/admin/usuarios/editar', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->userSave($_POST);
         });
 
         $this->post('/admin/usuarios/eliminar', function () {
             $this->auth->requireAdmin();
             $id = (int) ($_POST['id'] ?? 0);
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->userDelete($id);
         });
 
         $this->post('/admin/usuarios/restablecer-password', function () {
             $this->auth->requireAdmin();
-            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth);
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->userResetPassword($_POST);
         });
 
@@ -248,6 +268,11 @@ class Router
                 echo 'Plugin no encontrado';
                 return;
             }
+            // Verificar que el plugin está activo
+            if ($this->pluginManager && !$this->pluginManager->isActive('comments')) {
+                echo '<p>El plugin de comentarios está desactivado.</p>';
+                return;
+            }
             if (method_exists($plugin, 'adminCommentsList')) {
                 echo $plugin->adminCommentsList();
             }
@@ -257,6 +282,7 @@ class Router
             $this->auth->requireAuth();
             $plugin = $this->pluginManager ? $this->pluginManager->getPlugin('comments') : null;
             if (!$plugin) return;
+            if ($this->pluginManager && !$this->pluginManager->isActive('comments')) return;
             if (method_exists($plugin, 'adminCommentsApprove')) {
                 $plugin->adminCommentsApprove((int) ($_POST['id'] ?? 0));
             }
@@ -266,6 +292,7 @@ class Router
             $this->auth->requireAuth();
             $plugin = $this->pluginManager ? $this->pluginManager->getPlugin('comments') : null;
             if (!$plugin) return;
+            if ($this->pluginManager && !$this->pluginManager->isActive('comments')) return;
             if (method_exists($plugin, 'adminCommentsDelete')) {
                 $plugin->adminCommentsDelete((int) ($_POST['id'] ?? 0));
             }
@@ -281,6 +308,51 @@ class Router
         $this->get('/sitemap.xml', function () {
             $controller = new \MaterNatura\Controllers\SitemapController($this->db);
             $controller->xml();
+        });
+
+        // Robots.txt
+        $this->get('/robots.txt', function () {
+            header('Content-Type: text/plain; charset=utf-8');
+            $baseUrl = rtrim(MATER_BASE_URL, '/');
+            echo "User-agent: *\n";
+            echo "Allow: /\n";
+            echo "Disallow: /admin/\n";
+            echo "Disallow: /login\n";
+            echo "Disallow: /logout\n";
+            echo "Disallow: /media/\n";
+            echo "Sitemap: {$baseUrl}/sitemap.xml\n";
+            exit;
+        });
+
+        // Analytics tracking endpoint (client-side tracking via sendBeacon)
+        $this->post('/analytics/track', function () {
+            $input = json_decode(file_get_contents('php://input'), true) ?? [];
+            if ($this->pluginManager) {
+                $this->pluginManager->executeHook('analytics.track', $input);
+            }
+            http_response_code(204);
+            exit;
+        });
+
+        // Admin analytics (plugin dashboard)
+        $this->get('/admin/analytics', function () {
+            $this->auth->requireAuth();
+            $plugin = $this->pluginManager ? $this->pluginManager->getPlugin('analytics') : null;
+            if (!$plugin || !$this->pluginManager->isActive('analytics')) {
+                http_response_code(404);
+                echo '<p>Plugin de analytics no disponible.</p>';
+                return;
+            }
+            $analyticsHtml = method_exists($plugin, 'adminAnalyticsDashboard')
+                ? $plugin->adminAnalyticsDashboard()
+                : '<p>Dashboard no disponible.</p>';
+            $adminController = new \MaterNatura\Controllers\AdminController(
+                $this->db, $this->security, $this->auth, $this->pluginManager
+            );
+            echo $adminController->renderAdmin('plugin-analytics', [
+                'currentNav' => 'analytics',
+                'analyticsHtml' => $analyticsHtml,
+            ]);
         });
 
         // Comment submission (plugin hook)
@@ -330,7 +402,7 @@ class Router
             );
 
             if ($page) {
-                $controller = new \MaterNatura\Controllers\PageController($this->db, $this->security);
+                $controller = new \MaterNatura\Controllers\PageController($this->db, $this->security, $this->pluginManager);
                 echo $controller->show($slug);
                 return;
             }

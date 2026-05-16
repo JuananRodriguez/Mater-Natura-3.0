@@ -45,23 +45,14 @@ body.theme-light {
     font-family: 'Geist', sans-serif;
 }
 
-/* ─── Breadcrumbs ─── */
-.breadcrumbs {
-    font-family: 'Geist', sans-serif;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #999;
-    margin-bottom: 16px;
+/* ─── Post Controls: icon opacity ─── */
+.post-controls svg {
+    opacity: 0.75;
+    transition: opacity 0.2s ease, color 0.2s ease;
 }
-
-.breadcrumbs a {
-    color: #999;
-    text-decoration: none;
-}
-
-.breadcrumbs a:hover {
-    color: #000;
+.post-controls a:hover svg,
+.post-controls button:hover svg {
+    opacity: 1;
 }
 
 /* ─── Admin table ─── */

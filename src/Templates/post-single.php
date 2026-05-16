@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<article class="max-w-[724px] w-full mx-auto px-4 md:px-12 lg:px-24 py-12" itemscope itemtype="https://schema.org/BlogPosting">
+<article class="px-4 md:px-12 lg:px-24 py-12" itemscope itemtype="https://schema.org/BlogPosting">
 
     <!-- Post Meta Info: title + reference -->
     <div class="flex justify-between items-end mb-4">
@@ -33,7 +33,7 @@
     <?php endif; ?>
 
     <!-- Interaction and Navigation Controls -->
-    <div class="flex justify-between items-center text-gray-400">
+    <div class="flex justify-between items-center text-gray-400 post-controls">
         <!-- Previous Arrow -->
         <?php if (isset($prevPost) && $prevPost): ?>
         <a href="/<?= $escape($prevPost['slug']) ?>"

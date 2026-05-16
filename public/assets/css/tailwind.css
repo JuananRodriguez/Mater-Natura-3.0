@@ -707,10 +707,6 @@ video {
   max-width: 56rem;
 }
 
-.max-w-\[724px\] {
-  max-width: 724px;
-}
-
 .max-w-content {
   max-width: 940px;
 }
@@ -916,6 +912,10 @@ video {
 
 .pb-6 {
   padding-bottom: 1.5rem;
+}
+
+.pb-8 {
+  padding-bottom: 2rem;
 }
 
 .pt-1 {

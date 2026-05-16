@@ -10,7 +10,7 @@
         'isAuthenticated' => isset($_SESSION['mn_user']),
     ]) ?>
 
-    <main class="pt-20">
+    <main class="pt-20 pb-8" style="max-width:724px;width:100%;margin:0 auto;">
         <?= $content ?>
     </main>
 

@@ -28,19 +28,10 @@ class PostController
     }
 
     /**
-     * GET /post — Listado paginado de posts publicados
+     * GET /post — Listado completo de posts publicados (sin paginación)
      */
-    public function index(int $page = 1): string
+    public function index(): string
     {
-        // Redirigir page=1 a la URL canónica
-        if (isset($_GET['page']) && (int)$_GET['page'] === 1) {
-            header('Location: /post', true, 301);
-            exit;
-        }
-
-        $perPage = MATER_POSTS_PER_PAGE;
-        $offset = ($page - 1) * $perPage;
-
         // ─── Filtro por tag ───
         $tag = isset($_GET['tag']) ? trim($_GET['tag']) : '';
         $templateFilter = match ($tag) {
@@ -50,11 +41,11 @@ class PostController
         };
 
         $where = "WHERE p.status = 'published' AND p.visibility = 'public'";
-        $params = [$perPage, $offset];
+        $params = [];
 
         if ($templateFilter !== null) {
             $where .= " AND p.template = ?";
-            array_unshift($params, $templateFilter); // al inicio: templateFilter, luego perPage, offset
+            $params[] = $templateFilter;
         }
 
         $posts = $this->db->fetchAll(
@@ -62,24 +53,10 @@ class PostController
              FROM posts p
              JOIN users u ON p.user_id = u.id
              {$where}
-             ORDER BY p.published_at DESC
-             LIMIT ? OFFSET ?",
+             ORDER BY p.published_at DESC",
             $params
         );
-
-        $countWhere = "WHERE status = 'published' AND visibility = 'public'";
-        $countParams = [];
-        if ($templateFilter !== null) {
-            $countWhere .= " AND template = ?";
-            $countParams[] = $templateFilter;
-        }
-
-        $total = $this->db->fetchOne(
-            "SELECT COUNT(*) as cnt FROM posts {$countWhere}",
-            $countParams
-        );
-        $totalPosts = (int) ($total['cnt'] ?? 0);
-        $totalPages = max(1, (int) ceil($totalPosts / $perPage));
+        $totalPosts = count($posts);
 
         $template = new Template($this->security);
         if ($this->pluginManager) {
@@ -89,7 +66,7 @@ class PostController
         $template->setMetaDescription('Todos los poemas publicados en ' . MATER_SITE_NAME);
         $template->setOgType('website');
 
-        // Canonical (page 1 sin query param)
+        // Canonical
         $canonical = rtrim(MATER_BASE_URL, '/') . '/post';
         $template->setCanonicalUrl($canonical);
 
@@ -99,34 +76,14 @@ class PostController
             '@type' => 'CollectionPage',
             'name' => 'Posts — ' . MATER_SITE_NAME,
             'description' => 'Todos los poemas publicados en ' . MATER_SITE_NAME,
-            'url' => $canonical,
         ]);
-
-        $template->exposeToJs('currentPage', $page);
-        $template->exposeToJs('totalPages', $totalPages);
-        $template->exposeToJs('hasPrevPage', $page > 1);
-        $template->exposeToJs('hasNextPage', $page < $totalPages);
-        $template->exposeToJs('currentTag', $tag);
-
-        // Rel prev/next para paginación (con tag si aplica)
-        $basePostUrl = rtrim(MATER_BASE_URL, '/') . '/post';
-        $tagParam = $tag !== '' ? 'tag=' . urlencode($tag) . '&' : '';
-        if ($page > 1) {
-            $template->addAlternateLink('prev', $basePostUrl . '?' . $tagParam . 'page=' . ($page - 1));
-        }
-        if ($page < $totalPages) {
-            $template->addAlternateLink('next', $basePostUrl . '?' . $tagParam . 'page=' . ($page + 1));
-        }
 
         // Determinar layout según tag
         $layout = $templateFilter ?? 'dark';
 
         return $template->render('post-list', [
             'posts'       => $posts,
-            'currentPage' => $page,
-            'totalPages'  => $totalPages,
             'totalPosts'  => $totalPosts,
-            'currentTag'  => $tag,
         ], $layout);
     }
 

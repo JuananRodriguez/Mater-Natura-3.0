@@ -89,7 +89,7 @@ class Router
         // Post listing
         $this->get('/post', function () {
             $controller = new \MaterNatura\Controllers\PostController($this->db, $this->security, $this->auth, $this->pluginManager);
-            echo $controller->index((int) ($_GET['page'] ?? 1));
+            echo $controller->index();
         });
 
         // Login

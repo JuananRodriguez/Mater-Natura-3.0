@@ -11,5 +11,5 @@
 
 <!-- Tailwind CSS (estático, compilado localmente) -->
 <link rel="stylesheet" href="/assets/css/tailwind.css">
-<link rel="stylesheet" href="/assets/css/base.css?v=4">
+<link rel="stylesheet" href="/assets/css/base.css?v=5">
 <link rel="stylesheet" href="/assets/css/builder.css?v=2">

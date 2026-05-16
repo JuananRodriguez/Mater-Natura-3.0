@@ -4,13 +4,13 @@
 <head>
     <?= $this->renderPartial('head', ['meta' => $meta, 'jsDataScript' => $jsDataScript]) ?>
 </head>
-<body class="theme-light">
+<body class="theme-light" style="display:flex;flex-direction:column;min-height:100dvh;margin:0;">
     <?= $this->renderPartial('header', [
         'escape' => $escape,
         'isAuthenticated' => isset($_SESSION['mn_user']),
     ]) ?>
 
-    <main class="container">
+    <main class="pt-20 pb-8 flex-1" style="max-width:724px;width:100%;margin:0 auto;">
         <?= $content ?>
     </main>
 

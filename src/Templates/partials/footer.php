@@ -1,26 +1,22 @@
 <?php declare(strict_types=1); ?>
-<footer id="footer-wrapper" class="clear-both py-2.5 px-0 text-center leading-[1.5em] bg-white dark:bg-transparent">
-    <div class="max-w-content mx-auto">
-        <hr class="border-t border-gray-200 dark:border-[#333333] my-2.5">
+<footer class="w-full py-4 px-8 flex justify-between items-center header-footer-bg">
+    <!-- Footer Logo -->
+    <div class="text-lg font-bold tracking-widest uppercase">
+        MATER NATURA
+    </div>
 
-        <p class="text-[11px] text-[#888888] dark:text-[#777777] my-2.5 font-open mx-auto">
-            <a href="/aviso-legal" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Aviso legal</a>
-            &middot;
-            <a href="/condiciones-de-compra" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Condiciones de compra</a>
-            &middot;
-            <a href="/politica-de-privacidad" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Política de privacidad</a>
-            &middot;
-            <a href="/politica-de-cookies" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Política de cookies</a>
-            &middot;
-            <a href="/post" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Blog</a>
-            &middot;
-            <a href="/contacto" class="text-[#666666] dark:text-gray-400 hover:text-black dark:hover:text-[#cccccc] mx-1 no-underline transition-colors">Contacto</a>
-        </p>
-
-        <hr class="border-t border-gray-200 dark:border-[#333333] my-2.5">
-
-        <p class="text-[11px] text-[#888888] dark:text-[#777777] my-2.5 font-open mx-auto">
-            Mater Natura &middot; LaDársena Estudio
-        </p>
+    <!-- Footer Navigation -->
+    <div class="flex items-center gap-4 text-sm text-[#666666]">
+        <a href="/aviso-legal" class="hover:text-black transition-colors no-underline text-[#666666]">aviso legal</a>
+        <a href="/politica-de-privacidad" class="hover:text-black transition-colors no-underline text-[#666666]">política de privacidad</a>
+        <a href="/politica-de-cookies" class="hover:text-black transition-colors no-underline text-[#666666]">política de cookies</a>
+        <a href="/info" class="text-black font-medium hover:text-gray-600 transition-colors no-underline">info</a>
+        <a href="https://www.instagram.com/mater_natura/" target="_blank" class="text-black hover:text-gray-600 transition-colors no-underline" aria-label="Instagram">
+            <svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                <rect height="20" rx="5" ry="5" width="20" x="2" y="2"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+            </svg>
+        </a>
     </div>
 </footer>

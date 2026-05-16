@@ -48,15 +48,24 @@ class PostController
             $params[] = $templateFilter;
         }
 
+        // Primero obtenemos el total para mostrarlo
+        $countResult = $this->db->fetchOne(
+            "SELECT COUNT(*) as total FROM posts p {$where}",
+            $params
+        );
+        $totalPosts = (int)($countResult['total'] ?? 0);
+
+        // Solo cargamos los primeros N posts; el resto via AJAX scroll infinito
+        $initialLimit = 6;
         $posts = $this->db->fetchAll(
             "SELECT p.*, u.username as author_name
              FROM posts p
              JOIN users u ON p.user_id = u.id
              {$where}
-             ORDER BY p.published_at DESC",
-            $params
+             ORDER BY p.published_at DESC
+             LIMIT ?",
+            array_merge($params, [$initialLimit])
         );
-        $totalPosts = count($posts);
 
         $template = new Template($this->security);
         if ($this->pluginManager) {
@@ -82,9 +91,52 @@ class PostController
         $layout = $templateFilter ?? 'dark';
 
         return $template->render('post-list', [
-            'posts'       => $posts,
-            'totalPosts'  => $totalPosts,
+            'posts'      => $posts,
+            'totalPosts' => (int)$totalPosts,
+            'tag'        => $tag,
         ], $layout);
+    }
+
+    /**
+     * GET /post/fragment — Fragmento HTML para scroll infinito
+     */
+    public function fragment(): void
+    {
+        $offset = max(0, (int)($_GET['offset'] ?? 0));
+        $limit = max(1, min(10, (int)($_GET['limit'] ?? 6)));
+
+        $tag = isset($_GET['tag']) ? trim($_GET['tag']) : '';
+        $templateFilter = match ($tag) {
+            'dia'   => 'light',
+            'noche' => 'dark',
+            default => null,
+        };
+
+        $where = "WHERE p.status = 'published' AND p.visibility = 'public'";
+        $params = [];
+
+        if ($templateFilter !== null) {
+            $where .= " AND p.template = ?";
+            $params[] = $templateFilter;
+        }
+
+        $posts = $this->db->fetchAll(
+            "SELECT p.*, u.username as author_name
+             FROM posts p
+             JOIN users u ON p.user_id = u.id
+             {$where}
+             ORDER BY p.published_at DESC
+             LIMIT ? OFFSET ?",
+            array_merge($params, [$limit, $offset])
+        );
+
+        // Devolvemos HTML plano (sin layout)
+        $template = new Template($this->security);
+        echo $template->render('post-list-fragment', [
+            'posts'  => $posts,
+            'offset' => $offset,
+        ], 'raw');
+        exit;
     }
 
     /**

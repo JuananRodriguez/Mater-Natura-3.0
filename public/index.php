@@ -58,6 +58,7 @@ define('MATER_SLUG_RESERVED', $appConfig['slug_reserved'] ?? [
 define('MATER_IMAGE_MAX_SIZE', $appConfig['image_max_size'] ?? 5 * 1024 * 1024);
 define('MATER_IMAGE_MAX_WIDTH', $appConfig['image_max_width'] ?? 1200);
 define('MATER_IMAGE_MAX_HEIGHT', $appConfig['image_max_height'] ?? 1200);
+define('MATER_IMAGE_QUALITY', $appConfig['image_quality'] ?? 80);
 define('MATER_IMAGE_ALLOWED_TYPES', $appConfig['image_allowed_types'] ?? [
     'image/jpeg',
     'image/png',

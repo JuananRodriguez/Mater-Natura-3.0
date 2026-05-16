@@ -86,10 +86,16 @@ class Router
             echo $controller->index();
         });
 
-        // Post listing
+        // Post listing (scroll infinito: solo primeros posts, resto via AJAX)
         $this->get('/post', function () {
             $controller = new \MaterNatura\Controllers\PostController($this->db, $this->security, $this->auth, $this->pluginManager);
             echo $controller->index();
+        });
+
+        // Fragmento HTML para scroll infinito
+        $this->get('/post/fragment', function () {
+            $controller = new \MaterNatura\Controllers\PostController($this->db, $this->security, $this->auth, $this->pluginManager);
+            $controller->fragment();
         });
 
         // Login

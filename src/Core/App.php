@@ -98,6 +98,11 @@ class App
 
         session_start();
 
+        // ⚠️ PHP session_cache_limiter() envía por defecto 'no-store', que bloquea bfcache.
+        // Sobrescribimos con un valor que permite almacenamiento en caché privado
+        // sin comprometer la seguridad.
+        header('Cache-Control: private, max-age=0, must-revalidate', true);
+
         // Comprobar expiración por inactividad
         $this->checkSessionExpiry();
     }

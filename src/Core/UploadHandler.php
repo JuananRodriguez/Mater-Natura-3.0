@@ -42,13 +42,8 @@ class UploadHandler
             return ['success' => false, 'relativePath' => null, 'error' => 'Formato de imagen no permitido. Usa JPEG, PNG o WebP.', 'width' => null, 'height' => null];
         }
 
-        // 4. Determinar extensión
-        $extension = match ($mime) {
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/webp' => 'webp',
-            default => 'jpg',
-        };
+        // 4. Todo se convierte a WebP para optimizar peso
+        $extension = 'webp';
 
         // 5. Crear directorio YYYY/MM
         $yearMonth = date('Y/m');
@@ -132,7 +127,8 @@ class UploadHandler
     }
 
     /**
-     * Redimensionar imagen respetando proporciones
+     * Redimensionar y convertir a WebP con calidad optimizada.
+     * Siempre re-encodifica para maximizar compresión y limpiar metadatos EXIF.
      */
     private function processImage(string $sourcePath, string $destPath, string $mime): array
     {
@@ -145,18 +141,15 @@ class UploadHandler
         $maxWidth = MATER_IMAGE_MAX_WIDTH;
         $maxHeight = MATER_IMAGE_MAX_HEIGHT;
 
-        // Si la imagen es más pequeña que los límites, copiar tal cual
-        if ($origWidth <= $maxWidth && $origHeight <= $maxHeight) {
-            if (!copy($sourcePath, $destPath)) {
-                return ['success' => false, 'error' => 'Error al guardar la imagen.', 'width' => null, 'height' => null];
-            }
-            return ['success' => true, 'width' => $origWidth, 'height' => $origHeight];
-        }
+        // Calcular nuevas dimensiones (siempre re-encodificamos)
+        $newWidth = $origWidth;
+        $newHeight = $origHeight;
 
-        // Calcular nuevas dimensiones
-        $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
-        $newWidth = (int) round($origWidth * $ratio);
-        $newHeight = (int) round($origHeight * $ratio);
+        if ($origWidth > $maxWidth || $origHeight > $maxHeight) {
+            $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
+            $newWidth = (int) round($origWidth * $ratio);
+            $newHeight = (int) round($origHeight * $ratio);
+        }
 
         // Crear imagen desde origen
         $srcImage = match ($mime) {
@@ -173,21 +166,17 @@ class UploadHandler
         // Redimensionar
         $dstImage = imagecreatetruecolor($newWidth, $newHeight);
 
-        // Preservar transparencia PNG
-        if ($mime === 'image/png') {
+        // Preservar transparencia (fuentes PNG/WebP con canal alfa)
+        if ($mime === 'image/png' || $mime === 'image/webp') {
             imagealphablending($dstImage, false);
             imagesavealpha($dstImage, true);
         }
 
         imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
 
-        // Guardar según formato
-        $saved = match ($mime) {
-            'image/jpeg' => imagejpeg($dstImage, $destPath, 85),
-            'image/png' => imagepng($dstImage, $destPath, 8),
-            'image/webp' => imagewebp($dstImage, $destPath, 85),
-            default => false,
-        };
+        // Siempre guardar como WebP con calidad optimizada
+        // La conversión a WebP elimina metadatos EXIF automáticamente
+        $saved = imagewebp($dstImage, $destPath, MATER_IMAGE_QUALITY);
 
         imagedestroy($srcImage);
         imagedestroy($dstImage);

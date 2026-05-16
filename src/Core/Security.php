@@ -201,10 +201,10 @@ class Security
     public function sendSecurityHeaders(): void
     {
         $csp = "default-src 'self'; "
-             . "style-src 'self' 'unsafe-inline'; "
-             . "script-src 'self' 'unsafe-inline'; "
+             . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+             . "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
              . "img-src 'self' data:; "
-             . "font-src 'self'; "
+             . "font-src 'self' https://fonts.gstatic.com; "
              . "form-action 'self'; "
              . "base-uri 'self'; "
              . "frame-ancestors 'none';";

@@ -6,10 +6,12 @@
     <div class="w-full flex justify-center mb-6">
         <img src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>"
              alt="<?= $escape($post['title']) ?>"
+             width="<?= (int)($imageWidth ?? 667) ?>"
+             height="<?= (int)($imageHeight ?? 1000) ?>"
              class="max-w-full h-auto object-contain cursor-pointer"
              style="max-height: 70vh;"
              itemprop="image"
-             loading="lazy"
+             fetchpriority="high"
              data-lightbox>
     </div>
     <?php endif; ?>

@@ -18,6 +18,10 @@ package-lock.json
 .env.local
 .env.*.local
 
+# ─── Uploads (imágenes locales) ───
+/uploads/*
+!/uploads/.gitkeep
+
 # ─── IDE ───
 .idea/
 .vscode/
@@ -25,8 +29,6 @@ package-lock.json
 
 # ─── Mater-Natura ───
 /config/database.php
-/uploads/*
-!/uploads/.gitkeep
 /storage/logs/*
 !/storage/logs/.gitkeep
 

@@ -90,3 +90,58 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     // Expose for dynamic content
     window.lightbox = { open: open, close: close };
 })();
+
+/* ─── Keyboard Navigation (Prev/Next Post) ─── */
+(function() {
+    function getNavLink(direction) {
+        var label = direction === 'prev' ? 'Post anterior' : 'Siguiente post';
+        return document.querySelector('a[aria-label="' + label + '"]');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        // Ignorar si el usuario está escribiendo
+        var tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) {
+            return;
+        }
+
+        var isLeft = e.key === 'ArrowLeft';
+        var isRight = e.key === 'ArrowRight';
+        if (!isLeft && !isRight) return;
+
+        e.preventDefault();
+
+        var link = getNavLink(isLeft ? 'prev' : 'next');
+        if (!link || !link.href) return;
+
+        // Si el lightbox está abierto, guardar estado antes de navegar
+        var overlay = document.querySelector('.lightbox-overlay');
+        if (overlay && overlay.classList.contains('active')) {
+            sessionStorage.setItem('lightboxOpen', 'true');
+        }
+
+        window.location.href = link.href;
+    });
+})();
+
+/* ─── Restaurar lightbox tras navegación por teclado ─── */
+(function() {
+    if (sessionStorage.getItem('lightboxOpen') === 'true') {
+        sessionStorage.removeItem('lightboxOpen');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var img = document.querySelector('img[data-lightbox]');
+            if (img && window.lightbox) {
+                window.lightbox.open(img.src, img.alt);
+            }
+        });
+
+        // Si el DOM ya está cargado (caso raro)
+        if (document.readyState !== 'loading' && !document.querySelector('.lightbox-overlay.active')) {
+            var img = document.querySelector('img[data-lightbox]');
+            if (img && window.lightbox) {
+                window.lightbox.open(img.src, img.alt);
+            }
+        }
+    }
+})();

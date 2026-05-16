@@ -1,6 +1,19 @@
 <?php declare(strict_types=1); ?>
 <article class="px-4 md:px-12 lg:px-24 py-12" itemscope itemtype="https://schema.org/BlogPosting">
 
+    <!-- Main Image -->
+    <?php if (!empty($post['image_url'])): ?>
+    <div class="w-full flex justify-center mb-6">
+        <img src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>"
+             alt="<?= $escape($post['title']) ?>"
+             class="max-w-full h-auto object-contain cursor-pointer"
+             style="max-height: 70vh;"
+             itemprop="image"
+             loading="lazy"
+             data-lightbox>
+    </div>
+    <?php endif; ?>
+
     <!-- Post Meta Info: title + reference -->
     <div class="flex justify-between items-end mb-4">
         <h1 class="text-lg font-medium text-gray-800 m-0" itemprop="headline">
@@ -17,19 +30,6 @@
         <?php else: ?>
             <?= renderHtml($post['description']) ?>
         <?php endif; ?>
-    </div>
-    <?php endif; ?>
-
-    <!-- Main Image -->
-    <?php if (!empty($post['image_url'])): ?>
-    <div class="w-full flex justify-center mb-6">
-        <img src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>"
-             alt="<?= $escape($post['title']) ?>"
-             class="max-w-full h-auto object-contain cursor-pointer"
-             style="max-height: 70vh;"
-             itemprop="image"
-             loading="lazy"
-             data-lightbox>
     </div>
     <?php endif; ?>
 

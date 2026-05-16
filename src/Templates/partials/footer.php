@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<footer class="w-full py-6 px-8 flex justify-between items-center mt-auto header-footer-bg">
+<footer class="w-full py-6 px-8 flex justify-between items-center header-footer-bg">
     <!-- Footer Logo -->
     <div class="text-lg font-bold tracking-widest uppercase">
         MATER NATURA

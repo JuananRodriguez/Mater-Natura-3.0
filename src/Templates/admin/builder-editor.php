@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/admin.css?v=3">
-    <link rel="stylesheet" href="/assets/css/builder.css?v=1">
+    <link rel="stylesheet" href="/assets/css/builder.css?v=2">
     <?= $jsDataScript ?>
     <style>
         /* ─── Reset para el builder layout (sin layout admin wrapper) ─── */
@@ -487,7 +487,7 @@
             return '<!DOCTYPE html><html><head><title>' + title + '</title>' +
                 '<link rel="stylesheet" href="/assets/css/tailwind.css">' +
                 '<link rel="stylesheet" href="/assets/css/base.css">' +
-                '<link rel="stylesheet" href="/assets/css/builder.css?v=1">' +
+                '<link rel="stylesheet" href="/assets/css/builder.css?v=2">' +
                 '</head><body class="theme-' + theme + '"><div class="preview-container">' +
                 compsHtml + '</div></body></html>';
         }

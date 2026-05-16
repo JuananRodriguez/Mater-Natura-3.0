@@ -731,6 +731,33 @@
     border: none;
 }
 
+/* ═══════════════════════════════════════════════════════
+   Dark Theme — Frontend Components
+   ═══════════════════════════════════════════════════════ */
+.theme-dark .component-text {
+    color: #e0e0e0;
+}
+
+.theme-dark .quote-default {
+    color: #ccc;
+}
+
+.theme-dark .quote-bordered {
+    border-left-color: #666;
+}
+
+.theme-dark .quote-footer {
+    color: #999;
+}
+
+.theme-dark .component-image-caption {
+    color: #999;
+}
+
+.theme-dark .component-gallery .gallery-image {
+    border-radius: 4px;
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
     .builder-panel-right {

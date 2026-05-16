@@ -27,14 +27,14 @@
 
         <nav class="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-[#333333] text-sm" aria-label="Paginación">
             <?php if ($page > 1): ?>
-                <a href="/post?page=<?= $page - 1 ?>"
+                <a href="/post?<?= $currentTag ? 'tag=' . urlencode($currentTag) . '&' : '' ?>page=<?= $page - 1 ?>"
                    class="inline-block px-6 py-3 border border-black no-underline text-sm cursor-pointer text-center
                           bg-black text-white hover:bg-gray-800 transition-all duration-200">
                     <?= svg_icon('chevron-left') ?> Anterior
                 </a>
             <?php endif; ?>
             <?php if ($page < $totalPages): ?>
-                <a href="/post?page=<?= $page + 1 ?>"
+                <a href="/post?<?= $currentTag ? 'tag=' . urlencode($currentTag) . '&' : '' ?>page=<?= $page + 1 ?>"
                    class="inline-block px-6 py-3 border border-black no-underline text-sm cursor-pointer text-center
                           bg-transparent text-black hover:bg-black hover:text-white transition-all duration-200">
                     Siguiente <?= svg_icon('chevron-right') ?>

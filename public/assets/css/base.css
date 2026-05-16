@@ -18,7 +18,7 @@ body {
 }
 
 body.theme-dark {
-    background: #1a1a1a;
+    background: #000000;
     color: #e0e0e0;
 }
 
@@ -28,12 +28,11 @@ body.theme-light {
 }
 
 /* ─── Header & Footer ─── */
-.header-footer-bg {
-    background-color: #f2f2f2;
+.theme-light .header-footer-bg {
+    background-color: #faf6f0;
 }
-
 .theme-dark .header-footer-bg {
-    background-color: #222;
+    background-color: #000000;
 }
 
 .text-gray-custom {
@@ -188,6 +187,35 @@ body.theme-light {
     cursor: pointer;
 }
 
+/* ─── Logo theme-aware ─── */
+.logo-text {
+    transition: color 0.2s ease;
+}
+.theme-light .logo-text {
+    color: #1b1b1b;
+}
+.theme-dark .logo-text {
+    color: #ffffff;
+}
+
+/* ─── Nav links theme-aware ─── */
+.theme-dark .nav-link,
+.theme-dark .nav-link svg {
+    color: #999999;
+}
+.theme-dark .nav-link:hover,
+.theme-dark .nav-link:hover svg {
+    color: #ffffff;
+}
+.theme-light .nav-link,
+.theme-light .nav-link svg {
+    color: #666666;
+}
+.theme-light .nav-link:hover,
+.theme-light .nav-link:hover svg {
+    color: #000000;
+}
+
 /* ─── Lightbox ─── */
 .lightbox-overlay {
     display: none;
@@ -212,7 +240,7 @@ body.theme-light {
 
 /* Dark theme overlay */
 .theme-dark .lightbox-overlay {
-    background: rgba(26, 26, 26, 0.95);
+    background: rgba(0, 0, 0, 0.95);
 }
 .theme-dark .lightbox-overlay img {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);

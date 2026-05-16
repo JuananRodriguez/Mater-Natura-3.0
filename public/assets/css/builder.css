@@ -1,0 +1,777 @@
+/* ═══════════════════════════════════════════════════════
+   Component Builder — Editor Visual
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Toolbar ─── */
+.builder-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 16px;
+    background: #1a1a1a;
+    color: #fff;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+}
+
+.builder-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.builder-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.15s;
+}
+
+.builder-back-btn:hover { color: #fff; }
+
+.builder-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.builder-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #333;
+    color: #aaa;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.builder-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.builder-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.builder-btn-primary {
+    background: #fff;
+    color: #1a1a1a;
+    border-color: #fff;
+}
+
+.builder-btn-primary:hover {
+    background: #e0e0e0;
+}
+
+.builder-btn-outline {
+    background: transparent;
+    color: #ccc;
+    border-color: #444;
+}
+
+.builder-btn-outline:hover {
+    background: #333;
+    color: #fff;
+}
+
+.builder-btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+    border-color: #ddd;
+}
+
+.builder-btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+.builder-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ─── Editor body (3 paneles) ─── */
+.builder-body {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+/* ─── Panel izquierdo ─── */
+.builder-panel-left {
+    width: 240px;
+    min-width: 240px;
+    background: #f9f9f9;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.builder-panel-header {
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.builder-panel-header h3 {
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+}
+
+.builder-blocks-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.builder-block-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: grab;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #333;
+    text-align: left;
+    transition: all 0.15s;
+}
+
+.builder-block-btn:hover {
+    background: #f0f0f0;
+    border-color: #ccc;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.builder-block-btn:active {
+    cursor: grabbing;
+    transform: translateY(0);
+}
+
+.builder-block-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.builder-block-label {
+    font-weight: 500;
+}
+
+/* ─── Canvas central ─── */
+.builder-canvas {
+    flex: 1;
+    overflow-y: auto;
+    background: #f0f0f0;
+    padding: 24px;
+}
+
+.builder-dropzone {
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 200px;
+}
+
+.builder-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.builder-empty-state p {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.builder-hint {
+    font-size: 13px !important;
+    color: #bbb;
+}
+
+/* ─── Component Card ─── */
+.component-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.component-card:hover {
+    border-color: #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.component-card--selected {
+    border-color: #1a1a1a;
+    box-shadow: 0 0 0 2px rgba(26,26,26,0.15);
+}
+
+.component-card-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.component-drag-handle {
+    cursor: grab;
+    color: #bbb;
+    font-size: 18px;
+    margin-right: 10px;
+    user-select: none;
+    line-height: 1;
+}
+
+.component-drag-handle:active {
+    cursor: grabbing;
+}
+
+.component-card-type {
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    flex: 1;
+}
+
+.component-card-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.component-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #999;
+    transition: all 0.15s;
+}
+
+.component-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.component-btn-delete:hover {
+    background: #fee;
+    color: #c00;
+}
+
+.component-card-settings {
+    padding: 16px;
+}
+
+.component-preview-inner {
+    padding: 20px;
+    border: 1px dashed #e0e0e0;
+    border-radius: 4px;
+    margin: 8px 12px 12px;
+    pointer-events: none;
+    background: #fafafa;
+    overflow: hidden;
+    max-height: 200px;
+    position: relative;
+}
+
+.component-preview-inner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, #fafafa);
+    pointer-events: none;
+}
+
+/* ─── Panel derecho (Configuración) ─── */
+.builder-panel-right {
+    width: 340px;
+    min-width: 340px;
+    background: #fff;
+    border-left: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.builder-settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.builder-settings-empty {
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 16px;
+}
+
+.settings-active-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.settings-active-header h4 {
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.settings-active-form {
+    /* Scroll interno */
+}
+
+/* ─── Form fields ─── */
+.builder-field {
+    margin-bottom: 14px;
+}
+
+.builder-field-row {
+    display: flex;
+    gap: 12px;
+}
+
+.builder-field--half {
+    flex: 1;
+}
+
+.builder-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.builder-input,
+.builder-select,
+.builder-textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    transition: border-color 0.15s;
+}
+
+.builder-input:focus,
+.builder-select:focus,
+.builder-textarea:focus {
+    outline: none;
+    border-color: #1a1a1a;
+}
+
+.builder-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.builder-select {
+    cursor: pointer;
+}
+
+.builder-text-editor {
+    font-family: 'Georgia', serif;
+    min-height: 120px;
+}
+
+.builder-range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.builder-range {
+    flex: 1;
+    accent-color: #1a1a1a;
+}
+
+.builder-range-value {
+    font-size: 13px;
+    color: #666;
+    min-width: 36px;
+    text-align: right;
+}
+
+.builder-image-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.builder-image-name {
+    font-size: 12px;
+    color: #999;
+}
+
+/* ─── Toast ─── */
+.builder-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 24px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 99999;
+    transition: opacity 0.3s;
+}
+
+/* ─── Vista previa ─── */
+.preview-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ─── Scrollbars ─── */
+.builder-blocks-list::-webkit-scrollbar,
+.builder-canvas::-webkit-scrollbar,
+.builder-settings-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.builder-blocks-list::-webkit-scrollbar-track,
+.builder-canvas::-webkit-scrollbar-track,
+.builder-settings-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.builder-blocks-list::-webkit-scrollbar-thumb,
+.builder-canvas::-webkit-scrollbar-thumb,
+.builder-settings-content::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+.builder-blocks-list::-webkit-scrollbar-thumb:hover,
+.builder-canvas::-webkit-scrollbar-thumb:hover,
+.builder-settings-content::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+/* ─── Hero component (frontend preview) ─── */
+.component-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-color: #2d2d2d;
+    overflow: hidden;
+}
+
+.hero-height-sm { min-height: 200px; }
+.hero-height-md { min-height: 350px; }
+.hero-height-lg { min-height: 500px; }
+.hero-height-full { min-height: 80vh; }
+
+.hero-align-left .hero-content { align-items: flex-start; text-align: left; }
+.hero-align-center .hero-content { align-items: center; text-align: center; }
+.hero-align-right .hero-content { align-items: flex-end; text-align: right; }
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 40px 24px;
+    max-width: 700px;
+}
+
+.hero-title {
+    font-family: 'Geist', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.hero-text-light .hero-title,
+.hero-text-light .hero-subtitle {
+    color: #fff;
+}
+
+.hero-text-dark .hero-title,
+.hero-text-dark .hero-subtitle {
+    color: #1a1a1a;
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.85;
+}
+
+.hero-cta {
+    display: inline-block;
+    padding: 10px 28px;
+    background: #fff;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s;
+    margin-top: 8px;
+}
+
+.hero-cta:hover {
+    background: #e0e0e0;
+}
+
+.hero-text-dark .hero-cta {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.hero-text-dark .hero-cta:hover {
+    background: #333;
+}
+
+/* ─── Image component ─── */
+.component-image {
+    margin: 16px 0;
+}
+
+.component-image.align-left { text-align: left; }
+.component-image.align-center { text-align: center; }
+.component-image.align-right { text-align: right; }
+
+.component-image-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.component-image-caption {
+    font-size: 13px;
+    color: #888;
+    margin-top: 6px;
+}
+
+/* ─── Text component ─── */
+.component-text {
+    margin: 16px 0;
+}
+
+.component-text.text-sm { font-size: 14px; }
+.component-text.text-base { font-size: 16px; }
+.component-text.text-lg { font-size: 18px; }
+
+.component-text-content p {
+    margin: 0 0 12px;
+    line-height: 1.7;
+}
+
+.component-text-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* ─── Quote component ─── */
+.component-quote {
+    margin: 24px 0;
+    font-style: italic;
+}
+
+.quote-align-left { text-align: left; }
+.quote-align-center { text-align: center; }
+.quote-align-right { text-align: right; }
+
+.quote-default {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #555;
+}
+
+.quote-bordered {
+    border-left: 3px solid #333;
+    padding-left: 20px;
+    margin-left: 0;
+}
+
+.quote-text {
+    margin: 0 0 8px;
+    font-size: 1.2em;
+}
+
+.quote-footer {
+    font-size: 0.85em;
+    color: #999;
+}
+
+.quote-author {
+    font-style: normal;
+    font-weight: 600;
+}
+
+.quote-source {
+    font-style: normal;
+}
+
+/* ─── Gallery component ─── */
+.component-gallery {
+    margin: 16px 0;
+}
+
+.gallery-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: opacity 0.2s;
+}
+
+.gallery-image:hover {
+    opacity: 0.9;
+}
+
+.gallery-link {
+    display: block;
+    text-decoration: none;
+}
+
+/* ─── Columns component ─── */
+.component-columns {
+    margin: 16px 0;
+}
+
+.component-columns .col {
+    background: transparent;
+    border-radius: 4px;
+}
+
+/* ─── Spacer component ─── */
+.component-spacer {
+    user-select: none;
+}
+
+/* ─── HTML component ─── */
+.component-html {
+    margin: 16px 0;
+}
+
+.component-html img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ─── Component divider ─── */
+.component-divider {
+    border: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Dark Theme — Frontend Components
+   ═══════════════════════════════════════════════════════ */
+.theme-dark .component-text {
+    color: #e0e0e0;
+}
+
+.theme-dark .quote-default {
+    color: #ccc;
+}
+
+.theme-dark .quote-bordered {
+    border-left-color: #666;
+}
+
+.theme-dark .quote-footer {
+    color: #999;
+}
+
+.theme-dark .component-image-caption {
+    color: #999;
+}
+
+.theme-dark .component-gallery .gallery-image {
+    border-radius: 4px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+    .builder-panel-right {
+        position: fixed;
+        right: 0;
+        top: 56px;
+        bottom: 0;
+        z-index: 100;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+        transform: translateX(100%);
+        transition: transform 0.2s;
+    }
+
+    .builder-panel-right.is-open {
+        transform: translateX(0);
+    }
+}

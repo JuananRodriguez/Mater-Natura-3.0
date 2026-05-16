@@ -5,7 +5,11 @@
             <h1 class="text-[28px] font-normal text-black dark:text-[#e0e0e0] mb-2"><?= $escape($page['title']) ?></h1>
         </header>
         <div class="text-sm text-black dark:text-gray-300 leading-relaxed">
-            <?= renderHtml($page['content']) ?>
+            <?php if (!empty($componentsHtml)): ?>
+                <?= $componentsHtml ?>
+            <?php else: ?>
+                <?= renderHtml($page['content']) ?>
+            <?php endif; ?>
         </div>
     <?php else: ?>
         <div class="text-center py-16">

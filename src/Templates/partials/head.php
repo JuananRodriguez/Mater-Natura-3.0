@@ -12,3 +12,4 @@
 <!-- Tailwind CSS (estático, compilado localmente) -->
 <link rel="stylesheet" href="/assets/css/tailwind.css">
 <link rel="stylesheet" href="/assets/css/base.css?v=2">
+<link rel="stylesheet" href="/assets/css/builder.css?v=2">

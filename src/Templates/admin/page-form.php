@@ -8,6 +8,11 @@
         <div class="editor-header-right">
             <button type="submit" form="page-form" class="brutalist-btn-secondary" name="action" value="draft">Guardar Borrador</button>
             <button type="submit" form="page-form" class="brutalist-btn-primary" name="action" value="publish"><?= $page ? 'Actualizar' : 'Publicar' ?></button>
+            <?php if ($page): ?>
+                <a href="/admin/componentes/editar?type=page&id=<?= $page->id ?>" class="brutalist-btn-link">
+                    <?= svg_icon('puzzle') ?> Editor de bloques
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 

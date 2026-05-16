@@ -22,7 +22,11 @@
     <div class="estilo-fecha text-[#888888] dark:text-[#777777] font-open text-[11px] leading-[27px]"><?= date('d/m/Y', strtotime($post['published_at'])) ?></div>
 
     <div class="post-texto" itemprop="articleBody">
-        <?= renderHtml($post['description']) ?>
+        <?php if (!empty($componentsHtml)): ?>
+            <?= $componentsHtml ?>
+        <?php else: ?>
+            <?= renderHtml($post['description']) ?>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -355,6 +355,40 @@ class Router
             ]);
         });
 
+        // ─── Component Builder (Editor visual) ───
+
+        $this->get('/admin/componentes/editar', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\EditorController(
+                $this->db, $this->security, $this->auth
+            );
+            echo $controller->edit();
+        });
+
+        $this->post('/admin/componentes/guardar', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\EditorController(
+                $this->db, $this->security, $this->auth
+            );
+            $controller->save();
+        });
+
+        $this->post('/admin/componentes/preview', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\EditorController(
+                $this->db, $this->security, $this->auth
+            );
+            $controller->preview();
+        });
+
+        $this->get('/admin/componentes/listar-componentes', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\EditorController(
+                $this->db, $this->security, $this->auth
+            );
+            $controller->listComponents();
+        });
+
         // Comment submission (plugin hook)
         $this->post('/comment', function () {
             try {

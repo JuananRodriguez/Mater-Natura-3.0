@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<header class="fixed top-0 left-0 right-0 z-50 h-16 px-8 flex items-center justify-between header-footer-bg">
+<header class="fixed top-0 left-0 right-0 z-50 h-20 px-8 flex items-center justify-between header-footer-bg">
     <!-- Logo -->
     <a href="/" class="text-xl font-bold tracking-widest uppercase no-underline text-black">
         MATER NATURA

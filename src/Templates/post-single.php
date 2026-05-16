@@ -1,6 +1,5 @@
 <?php declare(strict_types=1); ?>
-<article class="max-w-4xl w-full mx-auto px-4 md:px-12 lg:px-24 py-12" itemscope itemtype="https://schema.org/BlogPosting">
-    <?= $this->renderBreadcrumbs() ?>
+<article class="max-w-[724px] w-full mx-auto px-4 md:px-12 lg:px-24 py-12" itemscope itemtype="https://schema.org/BlogPosting">
 
     <!-- Post Meta Info: title + reference -->
     <div class="flex justify-between items-end mb-4">

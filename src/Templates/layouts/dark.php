@@ -10,7 +10,7 @@
         'isAuthenticated' => isset($_SESSION['mn_user']),
     ]) ?>
 
-    <main class="pt-16">
+    <main class="pt-20">
         <?= $content ?>
     </main>
 

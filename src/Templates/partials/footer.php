@@ -1,12 +1,12 @@
 <?php declare(strict_types=1); ?>
-<footer class="w-full py-8 px-8 flex justify-between items-center header-footer-bg">
+<footer class="w-full py-4 px-8 flex justify-between items-center header-footer-bg">
     <!-- Footer Logo -->
     <div class="text-lg font-bold tracking-widest uppercase">
         MATER NATURA
     </div>
 
     <!-- Footer Navigation -->
-    <div class="flex items-center gap-6 text-sm text-[#666666]">
+    <div class="flex items-center gap-4 text-sm text-[#666666]">
         <a href="/aviso-legal" class="hover:text-black transition-colors no-underline text-[#666666]">aviso legal</a>
         <a href="/politica-de-privacidad" class="hover:text-black transition-colors no-underline text-[#666666]">política de privacidad</a>
         <a href="/politica-de-cookies" class="hover:text-black transition-colors no-underline text-[#666666]">política de cookies</a>

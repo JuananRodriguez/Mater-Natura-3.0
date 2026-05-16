@@ -11,7 +11,7 @@
 
     <!-- Post Description -->
     <?php if (!empty($post['description'])): ?>
-    <div class="text-xs text-gray-500 leading-relaxed mb-8 max-w-3xl" itemprop="description">
+    <div class="text-sm text-gray-500 leading-relaxed mb-8 max-w-3xl font-titillium" itemprop="description">
         <?php if (!empty($componentsHtml)): ?>
             <?= $componentsHtml ?>
         <?php else: ?>

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1); ?>
-<header class="fixed top-0 left-0 right-0 z-50 h-20 px-8 py-2 flex items-center justify-between header-footer-bg">
+<header class="fixed top-0 left-0 right-0 z-50 h-20 px-8 py-4 flex items-center justify-between header-footer-bg">
     <!-- Logo -->
     <a href="/" class="text-xl font-bold tracking-widest uppercase no-underline text-black">
         MATER NATURA
     </a>
 
     <!-- Navigation -->
-    <nav class="flex items-center gap-6 text-sm font-medium">
+    <nav class="flex items-center gap-4 text-sm font-medium">
         <a href="/post?tag=dia" class="text-[#666666] hover:text-black transition-colors no-underline">día</a>
         <a href="/post?tag=noche" class="text-[#666666] hover:text-black transition-colors no-underline">noche</a>
         <a href="/info" class="hover:text-black transition-colors no-underline text-black">info</a>

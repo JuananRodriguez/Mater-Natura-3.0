@@ -26,6 +26,7 @@
 
     <?= $this->renderPartial('footer', [
         'escape'      => $escape,
+        'themeLogo'   => $themeLogo,
         'themeNav'    => $themeNav,
         'themeSocial' => $themeSocial,
         'themeFooter' => $themeFooter,

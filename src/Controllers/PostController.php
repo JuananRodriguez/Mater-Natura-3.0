@@ -302,23 +302,25 @@ class PostController
             }
         }
 
-        // ─── Posts anterior y siguiente ───
+        // ─── Posts anterior y siguiente (mismo template) ───
         $prevPost = $this->db->fetchOne(
             "SELECT * FROM posts
              WHERE status = 'published' AND visibility = 'public'
+               AND template = ?
                AND (published_at < ? OR (published_at = ? AND id < ?))
              ORDER BY published_at DESC, id DESC
              LIMIT 1",
-            [$post['published_at'], $post['published_at'], $post['id']]
+            [$post['template'], $post['published_at'], $post['published_at'], $post['id']]
         );
 
         $nextPost = $this->db->fetchOne(
             "SELECT * FROM posts
              WHERE status = 'published' AND visibility = 'public'
+               AND template = ?
                AND (published_at > ? OR (published_at = ? AND id > ?))
              ORDER BY published_at ASC, id ASC
              LIMIT 1",
-            [$post['published_at'], $post['published_at'], $post['id']]
+            [$post['template'], $post['published_at'], $post['published_at'], $post['id']]
         );
 
         // Ejecutar hooks de plugin (ej: comentarios)

@@ -37,6 +37,7 @@
 
                 <?php if (($user['role'] ?? '') === 'admin'): ?>
                 <a href="/admin/usuarios" class="sidebar-link<?= ($currentNav ?? '') === 'users' ? ' active' : '' ?>"><?= svg_icon('people') ?> Usuarios</a>
+                <a href="/admin/apariencia" class="sidebar-link<?= ($currentNav ?? '') === 'theme' ? ' active' : '' ?>"><?= svg_icon('mater-natura') ?> Apariencia</a>
                 <a href="/admin/plugins" class="sidebar-link<?= ($currentNav ?? '') === 'plugins' ? ' active' : '' ?>"><?= svg_icon('puzzle') ?> Plugins</a>
                 <a href="/admin/ajustes" class="sidebar-link<?= ($currentNav ?? '') === 'settings' ? ' active' : '' ?>"><?= svg_icon('cog') ?> Ajustes</a>
                 <?php endif; ?>

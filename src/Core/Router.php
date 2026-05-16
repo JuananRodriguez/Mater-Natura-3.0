@@ -232,6 +232,19 @@ class Router
             $controller->saveSettings($_POST);
         });
 
+        // Admin theme (solo administradores)
+        $this->get('/admin/apariencia', function () {
+            $this->auth->requireAdmin();
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
+            echo $controller->themeSettings();
+        });
+
+        $this->post('/admin/apariencia', function () {
+            $this->auth->requireAdmin();
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
+            $controller->saveThemeSettings($_POST);
+        });
+
         // Admin usuarios (solo administradores)
         $this->get('/admin/usuarios', function () {
             $this->auth->requireAdmin();

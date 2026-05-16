@@ -791,6 +791,164 @@ class AdminController
         exit;
     }
 
+    // ─── Theme Editor (Apariencia) ───
+
+    /**
+     * GET /admin/apariencia — Formulario de personalización del theme
+     */
+    public function themeSettings(): string
+    {
+        $themeSettings = [
+            'logo'    => theme_setting('theme_logo') ?? $this->getDefaultLogo(),
+            'nav'     => theme_setting('theme_nav') ?? $this->getDefaultNav(),
+            'social'  => theme_setting('theme_social') ?? $this->getDefaultSocial(),
+            'footer'  => theme_setting('theme_footer') ?? $this->getDefaultFooter(),
+        ];
+
+        return $this->renderAdmin('theme-settings', [
+            'themeSettings' => $themeSettings,
+            'currentNav'    => 'theme',
+        ]);
+    }
+
+    /**
+     * POST /admin/apariencia — Guardar ajustes del theme
+     */
+    public function saveThemeSettings(array $data): void
+    {
+        if (!$this->security->validateCsrfToken($data['_csrf_token'] ?? '')) {
+            $_SESSION['admin_error'] = 'Token de seguridad inválido.';
+            header('Location: /admin/apariencia');
+            exit;
+        }
+
+        // ── Logo ──
+        $logoType = $data['logo_type'] ?? 'text';
+        if ($logoType === 'image' && !empty($_FILES['logo_image']) && $_FILES['logo_image']['error'] === UPLOAD_ERR_OK) {
+            $upload = new \MaterNatura\Core\UploadHandler($this->security);
+            $result = $upload->upload($_FILES['logo_image'], 'theme-logo');
+            if ($result['success']) {
+                save_theme_setting($this->db, 'theme_logo', [
+                    'type'   => 'image',
+                    'path'   => $result['relativePath'],
+                    'alt'    => trim($data['logo_alt'] ?? MATER_SITE_NAME),
+                    'width'  => $result['width'],
+                    'height' => $result['height'],
+                ]);
+            } else {
+                $_SESSION['admin_error'] = 'Error al subir el logo: ' . $result['error'];
+                header('Location: /admin/apariencia');
+                exit;
+            }
+        } elseif ($logoType === 'text') {
+            save_theme_setting($this->db, 'theme_logo', [
+                'type' => 'text',
+                'text' => trim($data['logo_text'] ?: MATER_SITE_NAME),
+            ]);
+        }
+
+        // ── Navegación ──
+        $navItems = [];
+        $labels = $data['nav_label'] ?? [];
+        $urls = $data['nav_url'] ?? [];
+        $scopes = $data['nav_scope'] ?? [];
+        $targets = $data['nav_target'] ?? [];
+        $kept = $data['nav_keep'] ?? [];
+
+        foreach ($kept as $i => $keep) {
+            if (!isset($labels[$i], $urls[$i])) continue;
+            $label = trim($labels[$i]);
+            $url = trim($urls[$i]);
+            if ($label === '' || $url === '') continue;
+
+            $navItems[] = [
+                'id'     => 'nav_' . bin2hex(random_bytes(4)),
+                'label'  => $label,
+                'url'    => $url,
+                'target' => ($targets[$i] ?? '_self') === '_blank' ? '_blank' : '_self',
+                'scope'  => $scopes[$i] ?? 'both',
+            ];
+        }
+
+        save_theme_setting($this->db, 'theme_nav', $navItems);
+
+        // ── Redes Sociales ──
+        $socialItems = [];
+        $platforms = $data['social_platform'] ?? [];
+        $socialUrls = $data['social_url'] ?? [];
+        $socialLabels = $data['social_label'] ?? [];
+        $socialKept = $data['social_keep'] ?? [];
+
+        foreach ($socialKept as $i => $keep) {
+            if (!isset($platforms[$i], $socialUrls[$i])) continue;
+            $url = trim($socialUrls[$i]);
+            if ($url === '') continue;
+
+            $socialItems[] = [
+                'id'       => 'social_' . bin2hex(random_bytes(4)),
+                'platform' => $platforms[$i] ?? 'custom',
+                'url'      => $url,
+                'label'    => trim($socialLabels[$i] ?? ''),
+            ];
+        }
+
+        save_theme_setting($this->db, 'theme_social', $socialItems);
+
+        // ── Footer ──
+        save_theme_setting($this->db, 'theme_footer', [
+            'copyright' => trim($data['footer_copyright'] ?? ''),
+        ]);
+
+        // Limpiar caché de settings para que se refleje en la vista previa
+        // El helper theme_setting() cachea en estática, se limpia al refrescar la página
+        $_SESSION['admin_success'] = 'Ajustes del theme guardados correctamente.';
+        header('Location: /admin/apariencia');
+        exit;
+    }
+
+    /**
+     * Valores por defecto del logo
+     */
+    private function getDefaultLogo(): array
+    {
+        return [
+            'type' => 'text',
+            'text' => 'MATER NATURA',
+        ];
+    }
+
+    /**
+     * Valores por defecto de navegación
+     */
+    private function getDefaultNav(): array
+    {
+        return [
+            ['id' => 'nav_1', 'label' => 'día',       'url' => '/post?tag=dia',   'target' => '_self', 'scope' => 'both'],
+            ['id' => 'nav_2', 'label' => 'noche',     'url' => '/post?tag=noche', 'target' => '_self', 'scope' => 'both'],
+            ['id' => 'nav_3', 'label' => 'info',      'url' => '/info',           'target' => '_self', 'scope' => 'both'],
+        ];
+    }
+
+    /**
+     * Valores por defecto de redes sociales
+     */
+    private function getDefaultSocial(): array
+    {
+        return [
+            ['id' => 'social_1', 'platform' => 'instagram', 'url' => 'https://www.instagram.com/mater_natura/', 'label' => 'Instagram'],
+        ];
+    }
+
+    /**
+     * Valores por defecto del footer
+     */
+    private function getDefaultFooter(): array
+    {
+        return [
+            'copyright' => MATER_SITE_NAME,
+        ];
+    }
+
     // ─── Privados ───
 
     /**

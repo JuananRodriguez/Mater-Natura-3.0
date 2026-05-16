@@ -41,6 +41,7 @@ define('MATER_CONFIG_DIR', MATER_ROOT_DIR . '/config');
 
 // ─── Helpers globales ───
 require MATER_ROOT_DIR . '/src/Core/helpers.php';
+require MATER_ROOT_DIR . '/src/Core/theme_settings.php';
 define('MATER_MIGRATIONS_DIR', MATER_ROOT_DIR . '/migrations');
 
 // Valores por defecto

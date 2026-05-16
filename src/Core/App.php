@@ -22,6 +22,9 @@ class App
         // Capa de datos
         $this->db = new Database($dbConfig);
 
+        // Inicializar acceso a settings del theme
+        set_theme_db($this->db);
+
         // Capa de seguridad (depende de DB para rate limiting)
         $this->security = new Security($this->db);
 

@@ -84,6 +84,19 @@ class Template
         return ob_get_clean();
     }
 
+    /**
+     * Render a post list item (shared between full page and AJAX fragments)
+     */
+    public function renderPostItem(array $post, bool $isFirst = false): string
+    {
+        $escape = fn($v) => $this->security->escapeHtml((string) $v);
+        $renderHtml = fn($v) => $v; // raw HTML passthrough
+
+        ob_start();
+        require $this->templatesDir . '/partials/post-list-item.php';
+        return ob_get_clean();
+    }
+
     public function setLayout(string $layout): void
     {
         $this->layout = $layout;

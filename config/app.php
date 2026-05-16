@@ -26,6 +26,7 @@ return [
     'image_max_size' => 5 * 1024 * 1024,  // 5 MB
     'image_max_width' => 1200,
     'image_max_height' => 1200,
+    'image_quality' => 80,
     'image_allowed_types' => ['image/jpeg', 'image/png', 'image/webp'],
 
     // Blog

@@ -799,10 +799,10 @@ class AdminController
     public function themeSettings(): string
     {
         $themeSettings = [
-            'logo'    => theme_setting('theme_logo') ?? $this->getDefaultLogo(),
-            'nav'     => theme_setting('theme_nav') ?? $this->getDefaultNav(),
-            'social'  => theme_setting('theme_social') ?? $this->getDefaultSocial(),
-            'footer'  => theme_setting('theme_footer') ?? $this->getDefaultFooter(),
+            'logo'         => theme_setting('theme_logo') ?? $this->getDefaultLogo(),
+            'headerItems'  => theme_setting('theme_header_items') ?? $this->getDefaultHeaderItems(),
+            'footerItems'  => theme_setting('theme_footer_items') ?? $this->getDefaultFooterItems(),
+            'footer'       => theme_setting('theme_footer') ?? $this->getDefaultFooter(),
         ];
 
         return $this->renderAdmin('theme-settings', [
@@ -847,63 +847,65 @@ class AdminController
             ]);
         }
 
-        // ── Navegación ──
-        $navItems = [];
-        $labels = $data['nav_label'] ?? [];
-        $urls = $data['nav_url'] ?? [];
-        $scopes = $data['nav_scope'] ?? [];
-        $targets = $data['nav_target'] ?? [];
-        $kept = $data['nav_keep'] ?? [];
+        // ── Items de Header ──
+        $headerItems = $this->buildItemsFromPost($data, 'header');
+        save_theme_setting($this->db, 'theme_header_items', $headerItems);
 
-        foreach ($kept as $i => $keep) {
-            if (!isset($labels[$i], $urls[$i])) continue;
-            $label = trim($labels[$i]);
-            $url = trim($urls[$i]);
-            if ($label === '' || $url === '') continue;
+        // ── Items de Footer ──
+        $footerItems = $this->buildItemsFromPost($data, 'footer');
+        save_theme_setting($this->db, 'theme_footer_items', $footerItems);
 
-            $navItems[] = [
-                'id'     => 'nav_' . bin2hex(random_bytes(4)),
-                'label'  => $label,
-                'url'    => $url,
-                'target' => ($targets[$i] ?? '_self') === '_blank' ? '_blank' : '_self',
-                'scope'  => $scopes[$i] ?? 'both',
-            ];
-        }
-
-        save_theme_setting($this->db, 'theme_nav', $navItems);
-
-        // ── Redes Sociales ──
-        $socialItems = [];
-        $platforms = $data['social_platform'] ?? [];
-        $socialUrls = $data['social_url'] ?? [];
-        $socialLabels = $data['social_label'] ?? [];
-        $socialKept = $data['social_keep'] ?? [];
-
-        foreach ($socialKept as $i => $keep) {
-            if (!isset($platforms[$i], $socialUrls[$i])) continue;
-            $url = trim($socialUrls[$i]);
-            if ($url === '') continue;
-
-            $socialItems[] = [
-                'id'       => 'social_' . bin2hex(random_bytes(4)),
-                'platform' => $platforms[$i] ?? 'custom',
-                'url'      => $url,
-                'label'    => trim($socialLabels[$i] ?? ''),
-            ];
-        }
-
-        save_theme_setting($this->db, 'theme_social', $socialItems);
-
-        // ── Footer ──
+        // ── Footer text ──
         save_theme_setting($this->db, 'theme_footer', [
-            'copyright' => trim($data['footer_copyright'] ?? ''),
+            'text' => trim($data['footer_text'] ?? ''),
         ]);
 
-        // Limpiar caché de settings para que se refleje en la vista previa
-        // El helper theme_setting() cachea en estática, se limpia al refrescar la página
         $_SESSION['admin_success'] = 'Ajustes del theme guardados correctamente.';
         header('Location: /admin/apariencia');
         exit;
+    }
+
+    /**
+     * Construye el array de items (nav + social unificados) desde el POST.
+     */
+    private function buildItemsFromPost(array $data, string $prefix): array
+    {
+        $items = [];
+        $types   = $data[$prefix . '_type'] ?? [];
+        $kept    = $data[$prefix . '_keep'] ?? [];
+        $labels  = $data[$prefix . '_label'] ?? [];
+        $urls    = $data[$prefix . '_url'] ?? [];
+        $targets = $data[$prefix . '_target'] ?? [];
+        $platforms = $data[$prefix . '_platform'] ?? [];
+        $socialLabels = $data[$prefix . '_social_label'] ?? [];
+
+        foreach ($kept as $i => $keep) {
+            $type = $types[$i] ?? 'nav';
+            if ($type === 'nav') {
+                $label = trim($labels[$i] ?? '');
+                $url   = trim($urls[$i] ?? '');
+                if ($label === '' || $url === '') continue;
+                $items[] = [
+                    'id'     => 'item_' . bin2hex(random_bytes(4)),
+                    'type'   => 'nav',
+                    'label'  => $label,
+                    'url'    => $url,
+                    'target' => ($targets[$i] ?? '_self') === '_blank' ? '_blank' : '_self',
+                ];
+            } else {
+                $url = trim($urls[$i] ?? '');
+                if ($url === '') continue;
+                $items[] = [
+                    'id'       => 'item_' . bin2hex(random_bytes(4)),
+                    'type'     => 'social',
+                    'platform' => $platforms[$i] ?? 'custom',
+                    'url'      => $url,
+                    'label'    => trim($socialLabels[$i] ?? ''),
+                ];
+            }
+        }
+
+        return $items;
     }
 
     /**
@@ -918,24 +920,24 @@ class AdminController
     }
 
     /**
-     * Valores por defecto de navegación
+     * Valores por defecto de items del header
      */
-    private function getDefaultNav(): array
+    private function getDefaultHeaderItems(): array
     {
         return [
-            ['id' => 'nav_1', 'label' => 'día',       'url' => '/post?tag=dia',   'target' => '_self', 'scope' => 'both'],
-            ['id' => 'nav_2', 'label' => 'noche',     'url' => '/post?tag=noche', 'target' => '_self', 'scope' => 'both'],
-            ['id' => 'nav_3', 'label' => 'info',      'url' => '/info',           'target' => '_self', 'scope' => 'both'],
+            ['id' => 'item_1', 'type' => 'nav', 'label' => 'día',   'url' => '/post?tag=dia',   'target' => '_self'],
+            ['id' => 'item_2', 'type' => 'nav', 'label' => 'noche', 'url' => '/post?tag=noche', 'target' => '_self'],
+            ['id' => 'item_3', 'type' => 'nav', 'label' => 'info',  'url' => '/info',           'target' => '_self'],
         ];
     }
 
     /**
-     * Valores por defecto de redes sociales
+     * Valores por defecto de items del footer
      */
-    private function getDefaultSocial(): array
+    private function getDefaultFooterItems(): array
     {
         return [
-            ['id' => 'social_1', 'platform' => 'instagram', 'url' => 'https://www.instagram.com/mater_natura/', 'label' => 'Instagram'],
+            ['id' => 'item_4', 'type' => 'social', 'platform' => 'instagram', 'url' => 'https://www.instagram.com/mater_natura/', 'label' => 'Instagram'],
         ];
     }
 
@@ -945,7 +947,7 @@ class AdminController
     private function getDefaultFooter(): array
     {
         return [
-            'copyright' => MATER_SITE_NAME,
+            'text' => MATER_SITE_NAME,
         ];
     }
 

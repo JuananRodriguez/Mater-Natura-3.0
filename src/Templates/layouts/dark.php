@@ -7,17 +7,16 @@
 <body class="theme-dark" style="display:flex;flex-direction:column;min-height:100dvh;margin:0;">
     <?php
     // Cargar settings del theme
-    $themeLogo   = theme_setting('theme_logo') ?? ['type' => 'text', 'text' => 'MATER NATURA'];
-    $themeNav    = theme_setting('theme_nav') ?? [];
-    $themeSocial = theme_setting('theme_social') ?? [];
-    $themeFooter = theme_setting('theme_footer') ?? [];
+    $themeLogo       = theme_setting('theme_logo') ?? ['type' => 'text', 'text' => 'MATER NATURA'];
+    $themeHeaderItems = theme_setting('theme_header_items') ?? [];
+    $themeFooterItems = theme_setting('theme_footer_items') ?? [];
+    $themeFooter     = theme_setting('theme_footer') ?? [];
     ?>
     <?= $this->renderPartial('header', [
         'escape' => $escape,
         'isAuthenticated' => isset($_SESSION['mn_user']),
-        'themeLogo'   => $themeLogo,
-        'themeNav'    => $themeNav,
-        'themeSocial' => $themeSocial,
+        'themeLogo'  => $themeLogo,
+        'themeItems' => $themeHeaderItems,
     ]) ?>
 
     <main class="pt-20 pb-8 flex-1" style="max-width:724px;width:100%;margin:0 auto;">
@@ -27,8 +26,7 @@
     <?= $this->renderPartial('footer', [
         'escape'      => $escape,
         'themeLogo'   => $themeLogo,
-        'themeNav'    => $themeNav,
-        'themeSocial' => $themeSocial,
+        'themeItems'  => $themeFooterItems,
         'themeFooter' => $themeFooter,
     ]) ?>
 

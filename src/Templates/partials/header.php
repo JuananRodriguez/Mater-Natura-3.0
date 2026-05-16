@@ -3,13 +3,10 @@
 /**
  * Header del sitio — renderizado desde theme settings
  *
- * Variables disponibles: $escape, $isAuthenticated, $themeLogo, $themeNav, $themeSocial
+ * Variables disponibles: $escape, $isAuthenticated, $themeLogo, $themeItems
  */
-$logo = $themeLogo ?? ['type' => 'text', 'text' => 'MATER NATURA'];
-$nav  = $themeNav ?? [];
-
-// Filtrar enlaces de navegación para header
-$headerNav = array_filter($nav, fn($item) => ($item['scope'] ?? 'both') === 'both' || ($item['scope'] ?? '') === 'header');
+$logo  = $themeLogo ?? ['type' => 'text', 'text' => 'MATER NATURA'];
+$items = $themeItems ?? [];
 ?>
 <header class="fixed top-0 left-0 right-0 z-50 px-8 py-4 flex items-center justify-between header-footer-bg">
     <!-- Logo -->
@@ -25,14 +22,24 @@ $headerNav = array_filter($nav, fn($item) => ($item['scope'] ?? 'both') === 'bot
         <?php endif; ?>
     </a>
 
-    <!-- Navigation -->
+    <!-- Items -->
     <nav class="flex items-center gap-4 text-sm font-medium">
-        <?php foreach ($headerNav as $item): ?>
-            <a href="<?= $escape($item['url'] ?? '#') ?>"
-               class="nav-link no-underline"
-               <?= ($item['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener"' : '' ?>>
-                <?= $escape($item['label'] ?? '') ?>
-            </a>
+        <?php foreach ($items as $item): ?>
+            <?php if (($item['type'] ?? 'nav') === 'nav'): ?>
+                <a href="<?= $escape($item['url'] ?? '#') ?>"
+                   class="nav-link no-underline"
+                   <?= ($item['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener"' : '' ?>>
+                    <?= $escape($item['label'] ?? '') ?>
+                </a>
+            <?php else: ?>
+                <a href="<?= $escape($item['url'] ?? '#') ?>"
+                   target="_blank"
+                   rel="noopener"
+                   class="nav-link no-underline"
+                   aria-label="<?= $escape($item['label'] ?: $item['platform'] ?? '') ?>">
+                    <?= social_svg($item['platform'] ?? 'custom') ?>
+                </a>
+            <?php endif; ?>
         <?php endforeach; ?>
     </nav>
 </header>

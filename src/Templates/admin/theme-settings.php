@@ -3,18 +3,18 @@
 /**
  * Theme Settings — Editor de apariencia
  *
- * Controla logo, navegación, redes sociales y footer.
- * Usa Alpine.js para listas dinámicas y vista previa.
+ * Controla logo, items del header, items del footer y texto del footer.
+ * Usa Alpine.js para pestañas, listas dinámicas y drag & drop.
  *
  * @var array $themeSettings Datos actuales del theme
  */
 
-$logo   = $themeSettings['logo'] ?? [];
-$nav    = $themeSettings['nav'] ?? [];
-$social = $themeSettings['social'] ?? [];
-$footer = $themeSettings['footer'] ?? [];
+$logo         = $themeSettings['logo'] ?? [];
+$headerItems  = $themeSettings['headerItems'] ?? [];
+$footerItems  = $themeSettings['footerItems'] ?? [];
+$footer       = $themeSettings['footer'] ?? [];
 
-// Plataformas sociales soportadas
+// Plataformas sociales
 $socialPlatforms = [
     'instagram' => 'Instagram',
     'twitter'   => 'Twitter / X',
@@ -29,14 +29,13 @@ $socialPlatforms = [
     'custom'    => '— Otro —',
 ];
 
-// Convertir arrays a JSON para Alpine
-$navJson    = json_encode($nav, JSON_UNESCAPED_UNICODE);
-$socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
+$hItemsJson = json_encode($headerItems, JSON_UNESCAPED_UNICODE);
+$fItemsJson = json_encode($footerItems, JSON_UNESCAPED_UNICODE);
 ?>
 <div class="admin-wrapper">
     <div class="admin-header">
         <h1>Apariencia</h1>
-        <p style="color:#888;font-size:14px;margin:4px 0 0">Personaliza el logo, la navegación, redes sociales y footer del sitio.</p>
+        <p style="color:#888;font-size:14px;margin:4px 0 0">Personaliza el logo, los elementos del header y del footer.</p>
     </div>
 
     <form method="POST" action="/admin/apariencia" class="admin-form" enctype="multipart/form-data"
@@ -45,12 +44,12 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
         <?= $csrfField ?>
 
         <!-- ════════════════════════════════════════════════
-             LOGO
+             LOGO (compartido)
              ════════════════════════════════════════════════ -->
         <div class="settings-section">
             <p class="settings-section-title">Logo</p>
+            <p style="font-size:12px;color:#888;margin:-8px 0 16px">Se muestra tanto en el header como en el footer.</p>
 
-            <!-- Toggle texto / imagen -->
             <div class="settings-field">
                 <label>Tipo de logo</label>
                 <div style="display:flex;gap:16px;margin-top:4px">
@@ -69,10 +68,8 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                 </div>
             </div>
 
-            <!-- Logo de texto -->
             <div class="settings-field" x-show="logoType === 'text'" x-cloak>
                 <label for="logo_text">Texto del logo</label>
-                <p style="font-size:12px;color:#888;margin:2px 0 6px">Se mostrará como texto simple en la cabecera.</p>
                 <input type="text" id="logo_text" name="logo_text"
                        class="brutalist-input"
                        value="<?= $escape($logo['text'] ?? 'MATER NATURA') ?>"
@@ -80,13 +77,11 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                        style="max-width:400px">
             </div>
 
-            <!-- Logo de imagen -->
             <div class="settings-field" x-show="logoType === 'image'" x-cloak>
                 <label for="logo_image">Imagen del logo</label>
-                <p style="font-size:12px;color:#888;margin:2px 0 6px">Recomendado: formato WebP, fondo transparente, altura máxima ~60px.</p>
+                <p style="font-size:12px;color:#888;margin:2px 0 6px">Recomendado: WebP, fondo transparente, altura ~60px.</p>
 
                 <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-                    <!-- Upload -->
                     <label class="brutalist-card-dashed" style="width:200px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;text-align:center;position:relative"
                            @dragover.prevent @drop.prevent="handleLogoDrop($event)">
                         <?= svg_icon('cloud-upload') ?>
@@ -97,24 +92,20 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                                @change="previewLogo($event)">
                     </label>
 
-                    <!-- Preview -->
                     <template x-if="logoPreviewURL">
                         <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                            <img :src="logoPreviewURL" alt="Vista previa"
+                            <img :src="logoPreviewURL" alt="Preview"
                                  style="max-height:60px;max-width:200px;border:1px solid #eee;padding:8px;background:#fafafa">
-                            <button type="button" class="btn-sm btn-danger" @click="removeLogo()"
-                                    style="font-size:11px">Eliminar</button>
+                            <button type="button" class="btn-sm btn-danger" @click="removeLogo()" style="font-size:11px">Eliminar</button>
                         </div>
                     </template>
 
-                    <!-- Logo actual -->
                     <template x-if="!logoPreviewURL && currentLogoURL">
                         <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
                             <p style="font-size:11px;color:#888;margin:0 0 2px;text-transform:uppercase;letter-spacing:0.05em">Actual</p>
                             <img :src="currentLogoURL" alt="Logo actual"
                                  style="max-height:60px;max-width:200px;border:1px solid #eee;padding:8px;background:#fafafa">
-                            <button type="button" class="btn-sm btn-danger" @click="removeCurrentLogo()"
-                                    style="font-size:11px">Eliminar logo actual</button>
+                            <button type="button" class="btn-sm btn-danger" @click="removeCurrentLogo()" style="font-size:11px">Eliminar</button>
                         </div>
                     </template>
 
@@ -123,11 +114,8 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                     </template>
                 </div>
 
-                <!-- Hidden inputs para gestión de logo actual -->
-                <input type="hidden" name="remove_current_logo" x-model="removeCurrentLogoField" value="0">
-
                 <div class="settings-field" style="margin-top:12px">
-                    <label for="logo_alt">Texto alternativo (alt) del logo</label>
+                    <label for="logo_alt">Texto alternativo (alt)</label>
                     <input type="text" id="logo_alt" name="logo_alt"
                            class="brutalist-input"
                            value="<?= $escape($logo['alt'] ?? MATER_SITE_NAME) ?>"
@@ -136,144 +124,235 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                            x-bind:disabled="logoType !== 'image'">
                 </div>
             </div>
-
-            <!-- Logo mode inicial desde PHP -->
-            <input type="hidden" name="initial_logo_type" value="<?= $escape($logo['type'] ?? 'text') ?>">
         </div>
 
         <!-- ════════════════════════════════════════════════
-             NAVEGACIÓN
+             PESTAÑAS: HEADER / FOOTER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section">
-            <p class="settings-section-title">Navegación</p>
-            <p style="font-size:12px;color:#888;margin:-8px 0 16px">Los enlaces aparecen en la cabecera y/o footer del sitio. Arrastra para reordenar.</p>
-
-            <template x-for="(item, index) in navItems" :key="item._key">
-                <div class="nav-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
-                    <!-- Drag handle -->
-                    <span style="cursor:grab;color:#bbb;padding-top:8px;font-size:18px;user-select:none"
-                          @mousedown="startDrag($event, index, 'nav')"
-                          @touchstart.prevent="startDrag($event, index, 'nav')">⠿</span>
-
-                    <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">
-                        <div class="settings-field" style="flex:1;min-width:120px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                            <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                   :name="'nav_label[' + index + ']'"
-                                   x-model="item.label"
-                                   placeholder="día">
-                        </div>
-                        <div class="settings-field" style="flex:1.5;min-width:160px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">URL</label>
-                            <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                   :name="'nav_url[' + index + ']'"
-                                   x-model="item.url"
-                                   placeholder="/post?tag=dia">
-                        </div>
-                        <div class="settings-field" style="min-width:80px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Ámbito</label>
-                            <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                    :name="'nav_scope[' + index + ']'"
-                                    x-model="item.scope">
-                                <option value="both">Header + Footer</option>
-                                <option value="header">Header</option>
-                                <option value="footer">Footer</option>
-                            </select>
-                        </div>
-                        <div class="settings-field" style="min-width:80px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Abrir en</label>
-                            <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                    :name="'nav_target[' + index + ']'"
-                                    x-model="item.target">
-                                <option value="_self">Misma pestaña</option>
-                                <option value="_blank">Nueva pestaña</option>
-                            </select>
-                        </div>
-
-                        <!-- Hidden para trackear items a guardar -->
-                        <input type="hidden" :name="'nav_keep[' + index + ']'" value="1">
-                    </div>
-
-                    <button type="button" class="btn-sm btn-danger" @click="removeNavItem(index)"
-                            style="margin-top:20px;font-size:11px;flex-shrink:0"
-                            x-show="navItems.length > 1">✕</button>
-                </div>
-            </template>
-
-            <button type="button" class="brutalist-btn-secondary" @click="addNavItem()" style="margin-top:4px;font-size:13px">
-                + Añadir enlace
-            </button>
+        <div class="settings-section" style="padding:0;border-bottom:0">
+            <div style="display:flex;border-bottom:2px solid #000">
+                <button type="button"
+                        style="flex:1;padding:14px 24px;font-family:'Geist',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;border:none;cursor:pointer;transition:all 0.15s"
+                        :style="tab === 'header' ? 'background:#000;color:#fff' : 'background:#f5f5f5;color:#000'"
+                        @click="tab = 'header'">
+                    Header
+                </button>
+                <button type="button"
+                        style="flex:1;padding:14px 24px;font-family:'Geist',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;border:none;cursor:pointer;transition:all 0.15s"
+                        :style="tab === 'footer' ? 'background:#000;color:#fff' : 'background:#f5f5f5;color:#000'"
+                        @click="tab = 'footer'">
+                    Footer
+                </button>
+            </div>
         </div>
 
         <!-- ════════════════════════════════════════════════
-             REDES SOCIALES
+             TAB: HEADER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section">
-            <p class="settings-section-title">Redes Sociales</p>
-            <p style="font-size:12px;color:#888;margin:-8px 0 16px">Los iconos aparecen en el footer del sitio.</p>
+        <div class="settings-section" x-show="tab === 'header'" x-cloak>
+            <p class="settings-section-title">Elementos del Header</p>
+            <p style="font-size:12px;color:#888;margin:-8px 0 16px">Cada elemento puede ser un enlace de navegación o un icono de red social. Arrastra para reordenar.</p>
 
-            <template x-for="(item, index) in socialItems" :key="item._key">
-                <div class="nav-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
+            <template x-for="(item, index) in headerItems" :key="item._key">
+                <div class="theme-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
                     <!-- Drag handle -->
                     <span style="cursor:grab;color:#bbb;padding-top:8px;font-size:18px;user-select:none"
-                          @mousedown="startDrag($event, index, 'social')"
-                          @touchstart.prevent="startDrag($event, index, 'social')">⠿</span>
+                          @mousedown="startDrag($event, index, 'header')">⠿</span>
 
                     <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">
-                        <div class="settings-field" style="min-width:130px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Plataforma</label>
+                        <!-- Type selector -->
+                        <div class="settings-field" style="min-width:100px;margin:0">
+                            <label style="font-size:11px;margin-bottom:2px">Tipo</label>
                             <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                    :name="'social_platform[' + index + ']'"
-                                    x-model="item.platform">
+                                    :name="'header_type[' + index + ']'"
+                                    x-model="item.type">
+                                <option value="nav">Enlace</option>
+                                <option value="social">Red social</option>
+                            </select>
+                        </div>
+
+                        <!-- Nav fields -->
+                        <template x-if="item.type === 'nav'">
+                            <>
+                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'header_label[' + index + ']'"
+                                           x-model="item.label"
+                                           placeholder="día">
+                                </div>
+                                <div class="settings-field" style="flex:1.5;min-width:140px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'header_url[' + index + ']'"
+                                           x-model="item.url"
+                                           placeholder="/post?tag=dia">
+                                </div>
+                                <div class="settings-field" style="min-width:80px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Abrir en</label>
+                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                            :name="'header_target[' + index + ']'"
+                                            x-model="item.target">
+                                        <option value="_self">Misma pestaña</option>
+                                        <option value="_blank">Nueva pestaña</option>
+                                    </select>
+                                </div>
+                            </>
+                        </template>
+
+                        <!-- Social fields -->
+                        <template x-if="item.type === 'social'">
+                            <>
+                                <div class="settings-field" style="min-width:120px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Plataforma</label>
+                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                            :name="'header_platform[' + index + ']'"
+                                            x-model="item.platform">
 <?php foreach ($socialPlatforms as $pValue => $pLabel): ?>
-                                <option value="<?= $pValue ?>"><?= $pLabel ?></option>
+                                        <option value="<?= $pValue ?>"><?= $pLabel ?></option>
 <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="settings-field" style="flex:2;min-width:200px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">URL</label>
-                            <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                   :name="'social_url[' + index + ']'"
-                                   x-model="item.url"
-                                   placeholder="https://www.instagram.com/mater_natura/">
-                        </div>
-                        <div class="settings-field" style="flex:1;min-width:120px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                            <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                   :name="'social_label[' + index + ']'"
-                                   x-model="item.label"
-                                   placeholder="Instagram">
-                        </div>
-
-                        <!-- Hidden para trackear items a guardar -->
-                        <input type="hidden" :name="'social_keep[' + index + ']'" value="1">
+                                    </select>
+                                </div>
+                                <div class="settings-field" style="flex:2;min-width:160px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'header_url[' + index + ']'"
+                                           x-model="item.url"
+                                           placeholder="https://instagram.com/mater_natura/">
+                                </div>
+                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'header_social_label[' + index + ']'"
+                                           x-model="item.label"
+                                           placeholder="Instagram">
+                                </div>
+                            </>
+                        </template>
                     </div>
 
-                    <button type="button" class="btn-sm btn-danger" @click="removeSocialItem(index)"
+                    <!-- Hidden keep -->
+                    <input type="hidden" :name="'header_keep[' + index + ']'" value="1">
+
+                    <button type="button" class="btn-sm btn-danger" @click="removeItem('header', index)"
                             style="margin-top:20px;font-size:11px;flex-shrink:0"
-                            x-show="socialItems.length > 1">✕</button>
+                            x-show="headerItems.length > 1">✕</button>
                 </div>
             </template>
 
-            <button type="button" class="brutalist-btn-secondary" @click="addSocialItem()" style="margin-top:4px;font-size:13px">
-                + Añadir red social
+            <button type="button" class="brutalist-btn-secondary" @click="addItem('header')" style="margin-top:4px;font-size:13px">
+                + Añadir elemento al header
             </button>
         </div>
 
         <!-- ════════════════════════════════════════════════
-             FOOTER
+             TAB: FOOTER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section" style="border-bottom:none">
-            <p class="settings-section-title">Footer</p>
+        <div class="settings-section" x-show="tab === 'footer'" x-cloak>
+            <p class="settings-section-title">Elementos del Footer</p>
+            <p style="font-size:12px;color:#888;margin:-8px 0 16px">Cada elemento puede ser un enlace de navegación o un icono de red social. Arrastra para reordenar.</p>
 
-            <div class="settings-field">
-                <label for="footer_copyright">Texto de copyright</label>
-                <p style="font-size:12px;color:#888;margin:2px 0 6px">Se muestra en la parte inferior del sitio.</p>
-                <input type="text" id="footer_copyright" name="footer_copyright"
-                       class="brutalist-input"
-                       value="<?= $escape($footer['copyright'] ?? MATER_SITE_NAME) ?>"
-                       placeholder="<?= $escape(MATER_SITE_NAME) ?>"
-                       style="max-width:500px">
+            <template x-for="(item, index) in footerItems" :key="item._key">
+                <div class="theme-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
+                    <!-- Drag handle -->
+                    <span style="cursor:grab;color:#bbb;padding-top:8px;font-size:18px;user-select:none"
+                          @mousedown="startDrag($event, index, 'footer')">⠿</span>
+
+                    <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">
+                        <!-- Type selector -->
+                        <div class="settings-field" style="min-width:100px;margin:0">
+                            <label style="font-size:11px;margin-bottom:2px">Tipo</label>
+                            <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                    :name="'footer_type[' + index + ']'"
+                                    x-model="item.type">
+                                <option value="nav">Enlace</option>
+                                <option value="social">Red social</option>
+                            </select>
+                        </div>
+
+                        <!-- Nav fields -->
+                        <template x-if="item.type === 'nav'">
+                            <>
+                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'footer_label[' + index + ']'"
+                                           x-model="item.label"
+                                           placeholder="aviso legal">
+                                </div>
+                                <div class="settings-field" style="flex:1.5;min-width:140px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'footer_url[' + index + ']'"
+                                           x-model="item.url"
+                                           placeholder="/aviso-legal">
+                                </div>
+                                <div class="settings-field" style="min-width:80px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Abrir en</label>
+                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                            :name="'footer_target[' + index + ']'"
+                                            x-model="item.target">
+                                        <option value="_self">Misma pestaña</option>
+                                        <option value="_blank">Nueva pestaña</option>
+                                    </select>
+                                </div>
+                            </>
+                        </template>
+
+                        <!-- Social fields -->
+                        <template x-if="item.type === 'social'">
+                            <>
+                                <div class="settings-field" style="min-width:120px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Plataforma</label>
+                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                            :name="'footer_platform[' + index + ']'"
+                                            x-model="item.platform">
+<?php foreach ($socialPlatforms as $pValue => $pLabel): ?>
+                                        <option value="<?= $pValue ?>"><?= $pLabel ?></option>
+<?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="settings-field" style="flex:2;min-width:160px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'footer_url[' + index + ']'"
+                                           x-model="item.url"
+                                           placeholder="https://instagram.com/mater_natura/">
+                                </div>
+                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
+                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
+                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                                           :name="'footer_social_label[' + index + ']'"
+                                           x-model="item.label"
+                                           placeholder="Instagram">
+                                </div>
+                            </>
+                        </template>
+                    </div>
+
+                    <input type="hidden" :name="'footer_keep[' + index + ']'" value="1">
+
+                    <button type="button" class="btn-sm btn-danger" @click="removeItem('footer', index)"
+                            style="margin-top:20px;font-size:11px;flex-shrink:0"
+                            x-show="footerItems.length > 1">✕</button>
+                </div>
+            </template>
+
+            <button type="button" class="brutalist-btn-secondary" @click="addItem('footer')" style="margin-top:4px;font-size:13px">
+                + Añadir elemento al footer
+            </button>
+
+            <!-- Footer text -->
+            <div style="margin-top:24px;padding-top:24px;border-top:1px solid #e0e0e0">
+                <p class="settings-section-title">Texto del footer</p>
+                <div class="settings-field">
+                    <label for="footer_text">Texto opcional junto al logo</label>
+                    <input type="text" id="footer_text" name="footer_text"
+                           class="brutalist-input"
+                           value="<?= $escape($footer['text'] ?? '') ?>"
+                           placeholder="MATER-NATURA"
+                           style="max-width:500px">
+                </div>
             </div>
         </div>
 
@@ -294,7 +373,10 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
 <script>
     function themeEditor() {
         return {
-            // State
+            // Tabs
+            tab: 'header',
+
+            // Logo
             logoType: '<?= $escape($logo['type'] ?? 'text') ?>',
             logoPreviewURL: null,
             currentLogoURL: <?php
@@ -304,10 +386,10 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                     echo 'null';
                 }
             ?>,
-            removeCurrentLogoField: '0',
 
-            navItems: <?= $navJson ?: '[]' ?>,
-            socialItems: <?= $socialJson ?: '[]' ?>,
+            // Items
+            headerItems: <?= $hItemsJson ?: '[]' ?>,
+            footerItems: <?= $fItemsJson ?: '[]' ?>,
 
             // Drag state
             dragIndex: null,
@@ -315,29 +397,36 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
             dragClone: null,
 
             init() {
-                // Asegurar keys únicas para Alpine
-                this.navItems = this.navItems.map((item, i) => ({...item, _key: 'nav_' + Date.now() + '_' + i}));
-                this.socialItems = this.socialItems.map((item, i) => ({...item, _key: 'social_' + Date.now() + '_' + i}));
+                this.headerItems = this.headerItems.map((item, i) => ({
+                    ...item,
+                    _key: 'h_' + Date.now() + '_' + i,
+                    type: item.type || 'nav',
+                    target: item.target || '_self',
+                    platform: item.platform || 'instagram'
+                }));
+                this.footerItems = this.footerItems.map((item, i) => ({
+                    ...item,
+                    _key: 'f_' + Date.now() + '_' + i,
+                    type: item.type || 'nav',
+                    target: item.target || '_self',
+                    platform: item.platform || 'instagram'
+                }));
 
-                if (this.navItems.length === 0) this.addNavItem();
-                if (this.socialItems.length === 0) this.addSocialItem();
+                if (this.headerItems.length === 0) this.addItem('header');
+                if (this.footerItems.length === 0) this.addItem('footer');
             },
 
             // ─── Logo ───
             switchLogoMode(mode) {
                 this.logoType = mode;
-                if (mode === 'text') {
-                    this.logoPreviewURL = null;
-                }
+                if (mode === 'text') this.logoPreviewURL = null;
             },
 
             previewLogo(event) {
                 const file = event.target.files[0];
                 if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.logoPreviewURL = e.target.result;
-                };
+                reader.onload = (e) => { this.logoPreviewURL = e.target.result; };
                 reader.readAsDataURL(file);
             },
 
@@ -358,49 +447,40 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
 
             removeCurrentLogo() {
                 this.currentLogoURL = null;
-                this.removeCurrentLogoField = '1';
                 this.logoType = 'text';
-                // Force radio button
                 document.querySelector('input[name="logo_type"][value="text"]').checked = true;
             },
 
-            // ─── Nav Items ───
-            addNavItem() {
-                const idx = this.navItems.length;
-                this.navItems.push({
-                    _key: 'nav_new_' + Date.now(),
-                    id: 'nav_' + Date.now(),
+            // ─── Items ───
+            getItems(list) {
+                return list === 'header' ? this.headerItems : this.footerItems;
+            },
+
+            addItem(list) {
+                const items = this.getItems(list);
+                const prefix = list === 'header' ? 'h' : 'f';
+                items.push({
+                    _key: prefix + '_new_' + Date.now(),
+                    id: 'item_' + Date.now(),
+                    type: 'nav',
                     label: '',
                     url: '',
                     target: '_self',
-                    scope: 'both'
-                });
-            },
-
-            removeNavItem(index) {
-                this.navItems.splice(index, 1);
-            },
-
-            // ─── Social Items ───
-            addSocialItem() {
-                this.socialItems.push({
-                    _key: 'social_new_' + Date.now(),
-                    id: 'social_' + Date.now(),
                     platform: 'instagram',
-                    url: '',
                     label: ''
                 });
             },
 
-            removeSocialItem(index) {
-                this.socialItems.splice(index, 1);
+            removeItem(list, index) {
+                const items = this.getItems(list);
+                items.splice(index, 1);
             },
 
-            // ─── Drag & Drop reordering ───
+            // ─── Drag & Drop ───
             startDrag(event, index, listName) {
                 this.dragIndex = index;
                 this.dragList = listName;
-                const target = event.target.closest('.nav-item');
+                const target = event.target.closest('.theme-item');
                 if (!target) return;
 
                 const clone = target.cloneNode(true);
@@ -417,23 +497,20 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
 
                 const onMove = (e) => {
                     if (!this.dragClone) return;
-                    const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+                    const clientY = e.clientY || 0;
                     this.dragClone.style.left = rect.left + 'px';
                     this.dragClone.style.top = (clientY - offsetY) + 'px';
 
-                    // Encontrar el item sobre el que estamos
-                    const items = document.querySelectorAll('.nav-item');
+                    const items = document.querySelectorAll('.theme-item');
                     let dropIndex = -1;
-                    items.forEach((item, i) => {
-                        const r = item.getBoundingClientRect();
+                    items.forEach((el, i) => {
+                        const r = el.getBoundingClientRect();
                         const mid = r.top + r.height / 2;
-                        if (clientY >= r.top && clientY <= r.bottom) {
-                            dropIndex = i;
-                        }
+                        if (clientY >= r.top && clientY <= r.bottom) dropIndex = i;
                     });
 
                     if (dropIndex >= 0 && dropIndex !== this.dragIndex && this.dragIndex !== null) {
-                        const list = this.dragList === 'nav' ? this.navItems : this.socialItems;
+                        const list = this.dragList === 'header' ? this.headerItems : this.footerItems;
                         const [moved] = list.splice(this.dragIndex, 1);
                         list.splice(dropIndex, 0, moved);
                         this.dragIndex = dropIndex;
@@ -441,22 +518,16 @@ $socialJson = json_encode($social, JSON_UNESCAPED_UNICODE);
                 };
 
                 const onUp = () => {
-                    if (this.dragClone) {
-                        document.body.removeChild(this.dragClone);
-                    }
+                    if (this.dragClone) document.body.removeChild(this.dragClone);
                     this.dragClone = null;
                     this.dragIndex = null;
                     this.dragList = null;
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
-                    document.removeEventListener('touchmove', onMove);
-                    document.removeEventListener('touchend', onUp);
                 };
 
                 document.addEventListener('mousemove', onMove);
                 document.addEventListener('mouseup', onUp);
-                document.addEventListener('touchmove', onMove, {passive: true});
-                document.addEventListener('touchend', onUp);
             }
         };
     }

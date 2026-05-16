@@ -129,41 +129,39 @@ $fItemsJson = json_encode($footerItems, JSON_UNESCAPED_UNICODE);
         <!-- ════════════════════════════════════════════════
              PESTAÑAS: HEADER / FOOTER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section" style="padding:0;border-bottom:0">
-            <div style="display:flex;border-bottom:2px solid #000">
-                <button type="button"
-                        style="flex:1;padding:14px 24px;font-family:'Geist',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;border:none;cursor:pointer;transition:all 0.15s"
-                        :style="tab === 'header' ? 'background:#000;color:#fff' : 'background:#f5f5f5;color:#000'"
-                        @click="tab = 'header'">
-                    Header
-                </button>
-                <button type="button"
-                        style="flex:1;padding:14px 24px;font-family:'Geist',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;border:none;cursor:pointer;transition:all 0.15s"
-                        :style="tab === 'footer' ? 'background:#000;color:#fff' : 'background:#f5f5f5;color:#000'"
-                        @click="tab = 'footer'">
-                    Footer
-                </button>
-            </div>
+        <div class="theme-tabs">
+            <button type="button"
+                    class="theme-tab-btn"
+                    :class="{ active: tab === 'header' }"
+                    @click="tab = 'header'">
+                Header
+            </button>
+            <button type="button"
+                    class="theme-tab-btn"
+                    :class="{ active: tab === 'footer' }"
+                    @click="tab = 'footer'">
+                Footer
+            </button>
         </div>
 
         <!-- ════════════════════════════════════════════════
              TAB: HEADER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section" x-show="tab === 'header'" x-cloak>
+        <div class="settings-section theme-tab-panel" x-show="tab === 'header'" x-cloak>
             <p class="settings-section-title">Elementos del Header</p>
             <p style="font-size:12px;color:#888;margin:-8px 0 16px">Cada elemento puede ser un enlace de navegación o un icono de red social. Arrastra para reordenar.</p>
 
             <template x-for="(item, index) in headerItems" :key="item._key">
-                <div class="theme-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
+                <div class="theme-item">
                     <!-- Drag handle -->
-                    <span style="cursor:grab;color:#bbb;padding-top:8px;font-size:18px;user-select:none"
+                    <span class="theme-item-drag"
                           @mousedown="startDrag($event, index, 'header')">⠿</span>
 
-                    <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">
+                    <div class="theme-item-fields">
                         <!-- Type selector -->
-                        <div class="settings-field" style="min-width:100px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Tipo</label>
-                            <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                        <div class="settings-field" style="min-width:100px">
+                            <label>Tipo</label>
+                            <select class="brutalist-input"
                                     :name="'header_type[' + index + ']'"
                                     x-model="item.type">
                                 <option value="nav">Enlace</option>
@@ -172,70 +170,61 @@ $fItemsJson = json_encode($footerItems, JSON_UNESCAPED_UNICODE);
                         </div>
 
                         <!-- Nav fields -->
-                        <template x-if="item.type === 'nav'">
-                            <>
-                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'header_label[' + index + ']'"
-                                           x-model="item.label"
-                                           placeholder="día">
-                                </div>
-                                <div class="settings-field" style="flex:1.5;min-width:140px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'header_url[' + index + ']'"
-                                           x-model="item.url"
-                                           placeholder="/post?tag=dia">
-                                </div>
-                                <div class="settings-field" style="min-width:80px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Abrir en</label>
-                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                            :name="'header_target[' + index + ']'"
-                                            x-model="item.target">
-                                        <option value="_self">Misma pestaña</option>
-                                        <option value="_blank">Nueva pestaña</option>
-                                    </select>
-                                </div>
-                            </>
-                        </template>
+                        <div class="settings-field" style="flex:1;min-width:100px" x-show="item.type === 'nav'">
+                            <label>Etiqueta</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'header_label[' + index + ']'"
+                                   x-model="item.label"
+                                   placeholder="día">
+                        </div>
+                        <div class="settings-field" style="flex:1.5;min-width:140px" x-show="item.type === 'nav'">
+                            <label>URL</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'header_url[' + index + ']'"
+                                   x-model="item.url"
+                                   placeholder="/post?tag=dia">
+                        </div>
+                        <div class="settings-field" style="min-width:80px" x-show="item.type === 'nav'">
+                            <label>Abrir en</label>
+                            <select class="brutalist-input"
+                                    :name="'header_target[' + index + ']'"
+                                    x-model="item.target">
+                                <option value="_self">Misma pestaña</option>
+                                <option value="_blank">Nueva pestaña</option>
+                            </select>
+                        </div>
 
                         <!-- Social fields -->
-                        <template x-if="item.type === 'social'">
-                            <>
-                                <div class="settings-field" style="min-width:120px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Plataforma</label>
-                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                            :name="'header_platform[' + index + ']'"
-                                            x-model="item.platform">
+                        <div class="settings-field" style="min-width:120px" x-show="item.type === 'social'">
+                            <label>Plataforma</label>
+                            <select class="brutalist-input"
+                                    :name="'header_platform[' + index + ']'"
+                                    x-model="item.platform">
 <?php foreach ($socialPlatforms as $pValue => $pLabel): ?>
-                                        <option value="<?= $pValue ?>"><?= $pLabel ?></option>
+                                <option value="<?= $pValue ?>"><?= $pLabel ?></option>
 <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="settings-field" style="flex:2;min-width:160px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'header_url[' + index + ']'"
-                                           x-model="item.url"
-                                           placeholder="https://instagram.com/mater_natura/">
-                                </div>
-                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'header_social_label[' + index + ']'"
-                                           x-model="item.label"
-                                           placeholder="Instagram">
-                                </div>
-                            </>
-                        </template>
+                            </select>
+                        </div>
+                        <div class="settings-field" style="flex:2;min-width:160px" x-show="item.type === 'social'">
+                            <label>URL</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'header_url[' + index + ']'"
+                                   x-model="item.url"
+                                   placeholder="https://instagram.com/mater_natura/">
+                        </div>
+                        <div class="settings-field" style="flex:1;min-width:100px" x-show="item.type === 'social'">
+                            <label>Etiqueta</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'header_social_label[' + index + ']'"
+                                   x-model="item.label"
+                                   placeholder="Instagram">
+                        </div>
                     </div>
 
                     <!-- Hidden keep -->
                     <input type="hidden" :name="'header_keep[' + index + ']'" value="1">
 
-                    <button type="button" class="btn-sm btn-danger" @click="removeItem('header', index)"
-                            style="margin-top:20px;font-size:11px;flex-shrink:0"
+                    <button type="button" class="btn-sm btn-danger theme-item-remove" @click="removeItem('header', index)"
                             x-show="headerItems.length > 1">✕</button>
                 </div>
             </template>
@@ -248,21 +237,21 @@ $fItemsJson = json_encode($footerItems, JSON_UNESCAPED_UNICODE);
         <!-- ════════════════════════════════════════════════
              TAB: FOOTER
              ════════════════════════════════════════════════ -->
-        <div class="settings-section" x-show="tab === 'footer'" x-cloak>
+        <div class="settings-section theme-tab-panel" x-show="tab === 'footer'" x-cloak>
             <p class="settings-section-title">Elementos del Footer</p>
             <p style="font-size:12px;color:#888;margin:-8px 0 16px">Cada elemento puede ser un enlace de navegación o un icono de red social. Arrastra para reordenar.</p>
 
             <template x-for="(item, index) in footerItems" :key="item._key">
-                <div class="theme-item" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:12px;border:1px solid #e0e0e0;background:#fafafa">
+                <div class="theme-item">
                     <!-- Drag handle -->
-                    <span style="cursor:grab;color:#bbb;padding-top:8px;font-size:18px;user-select:none"
+                    <span class="theme-item-drag"
                           @mousedown="startDrag($event, index, 'footer')">⠿</span>
 
-                    <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">
+                    <div class="theme-item-fields">
                         <!-- Type selector -->
-                        <div class="settings-field" style="min-width:100px;margin:0">
-                            <label style="font-size:11px;margin-bottom:2px">Tipo</label>
-                            <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
+                        <div class="settings-field" style="min-width:100px">
+                            <label>Tipo</label>
+                            <select class="brutalist-input"
                                     :name="'footer_type[' + index + ']'"
                                     x-model="item.type">
                                 <option value="nav">Enlace</option>
@@ -271,69 +260,60 @@ $fItemsJson = json_encode($footerItems, JSON_UNESCAPED_UNICODE);
                         </div>
 
                         <!-- Nav fields -->
-                        <template x-if="item.type === 'nav'">
-                            <>
-                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'footer_label[' + index + ']'"
-                                           x-model="item.label"
-                                           placeholder="aviso legal">
-                                </div>
-                                <div class="settings-field" style="flex:1.5;min-width:140px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'footer_url[' + index + ']'"
-                                           x-model="item.url"
-                                           placeholder="/aviso-legal">
-                                </div>
-                                <div class="settings-field" style="min-width:80px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Abrir en</label>
-                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                            :name="'footer_target[' + index + ']'"
-                                            x-model="item.target">
-                                        <option value="_self">Misma pestaña</option>
-                                        <option value="_blank">Nueva pestaña</option>
-                                    </select>
-                                </div>
-                            </>
-                        </template>
+                        <div class="settings-field" style="flex:1;min-width:100px" x-show="item.type === 'nav'">
+                            <label>Etiqueta</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'footer_label[' + index + ']'"
+                                   x-model="item.label"
+                                   placeholder="aviso legal">
+                        </div>
+                        <div class="settings-field" style="flex:1.5;min-width:140px" x-show="item.type === 'nav'">
+                            <label>URL</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'footer_url[' + index + ']'"
+                                   x-model="item.url"
+                                   placeholder="/aviso-legal">
+                        </div>
+                        <div class="settings-field" style="min-width:80px" x-show="item.type === 'nav'">
+                            <label>Abrir en</label>
+                            <select class="brutalist-input"
+                                    :name="'footer_target[' + index + ']'"
+                                    x-model="item.target">
+                                <option value="_self">Misma pestaña</option>
+                                <option value="_blank">Nueva pestaña</option>
+                            </select>
+                        </div>
 
                         <!-- Social fields -->
-                        <template x-if="item.type === 'social'">
-                            <>
-                                <div class="settings-field" style="min-width:120px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Plataforma</label>
-                                    <select class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                            :name="'footer_platform[' + index + ']'"
-                                            x-model="item.platform">
+                        <div class="settings-field" style="min-width:120px" x-show="item.type === 'social'">
+                            <label>Plataforma</label>
+                            <select class="brutalist-input"
+                                    :name="'footer_platform[' + index + ']'"
+                                    x-model="item.platform">
 <?php foreach ($socialPlatforms as $pValue => $pLabel): ?>
-                                        <option value="<?= $pValue ?>"><?= $pLabel ?></option>
+                                <option value="<?= $pValue ?>"><?= $pLabel ?></option>
 <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="settings-field" style="flex:2;min-width:160px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">URL</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'footer_url[' + index + ']'"
-                                           x-model="item.url"
-                                           placeholder="https://instagram.com/mater_natura/">
-                                </div>
-                                <div class="settings-field" style="flex:1;min-width:100px;margin:0">
-                                    <label style="font-size:11px;margin-bottom:2px">Etiqueta</label>
-                                    <input type="text" class="brutalist-input" style="font-size:14px;padding:6px 8px"
-                                           :name="'footer_social_label[' + index + ']'"
-                                           x-model="item.label"
-                                           placeholder="Instagram">
-                                </div>
-                            </>
-                        </template>
+                            </select>
+                        </div>
+                        <div class="settings-field" style="flex:2;min-width:160px" x-show="item.type === 'social'">
+                            <label>URL</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'footer_url[' + index + ']'"
+                                   x-model="item.url"
+                                   placeholder="https://instagram.com/mater_natura/">
+                        </div>
+                        <div class="settings-field" style="flex:1;min-width:100px" x-show="item.type === 'social'">
+                            <label>Etiqueta</label>
+                            <input type="text" class="brutalist-input"
+                                   :name="'footer_social_label[' + index + ']'"
+                                   x-model="item.label"
+                                   placeholder="Instagram">
+                        </div>
                     </div>
 
                     <input type="hidden" :name="'footer_keep[' + index + ']'" value="1">
 
-                    <button type="button" class="btn-sm btn-danger" @click="removeItem('footer', index)"
-                            style="margin-top:20px;font-size:11px;flex-shrink:0"
+                    <button type="button" class="btn-sm btn-danger theme-item-remove" @click="removeItem('footer', index)"
                             x-show="footerItems.length > 1">✕</button>
                 </div>
             </template>

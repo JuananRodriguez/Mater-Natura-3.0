@@ -18,7 +18,7 @@ body {
 }
 
 body.theme-dark {
-    background: #1a1a1a;
+    background: #000000;
     color: #e0e0e0;
 }
 
@@ -32,7 +32,7 @@ body.theme-light {
     background-color: #faf6f0;
 }
 .theme-dark .header-footer-bg {
-    background-color: #1b1b1b;
+    background-color: #000000;
 }
 
 .text-gray-custom {
@@ -240,7 +240,7 @@ body.theme-light {
 
 /* Dark theme overlay */
 .theme-dark .lightbox-overlay {
-    background: rgba(26, 26, 26, 0.95);
+    background: rgba(0, 0, 0, 0.95);
 }
 .theme-dark .lightbox-overlay img {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);

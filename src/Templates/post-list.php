@@ -1,8 +1,8 @@
 <?php declare(strict_types=1); ?>
-<article class="max-w-content mx-auto font-titillium">
+<article class="max-w-4xl mx-auto px-4 md:px-12 lg:px-24 py-12">
     <header class="mb-8">
         <h1 class="text-[28px] font-normal text-black dark:text-[#e0e0e0] mb-1">Poemas</h1>
-        <p class="text-sm text-[#888888] dark:text-[#777777]">Lista de poemas publicados</p>
+        <p class="text-sm text-gray-500 dark:text-[#777777]">Lista de poemas publicados</p>
     </header>
 
     <?php if ($posts): ?>
@@ -15,7 +15,7 @@
                             <?= $escape($post['title']) ?>
                         </a>
                     </h2>
-                    <p class="text-xs text-[#888888] dark:text-[#777777] mt-1 mb-2">
+                    <p class="text-xs text-gray-500 dark:text-[#777777] mt-1 mb-2">
                         <?= date('d/m/Y', strtotime($post['published_at'])) ?>
                     </p>
                     <p class="text-sm text-[#444444] dark:text-[#aaaaaa] leading-relaxed">
@@ -25,29 +25,23 @@
             <?php endforeach; ?>
         </ul>
 
-        <nav class="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-[#333333] font-titillium text-sm" aria-label="Paginación">
+        <nav class="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-[#333333] text-sm" aria-label="Paginación">
             <?php if ($page > 1): ?>
                 <a href="/post?page=<?= $page - 1 ?>"
-                   class="inline-block px-6 py-3 border border-[#2d2d2d] dark:border-[#999999]
-                          no-underline text-sm cursor-pointer text-center
-                          bg-transparent text-[#2d2d2d] dark:text-[#999999]
-                          hover:bg-[#2d2d2d] dark:hover:bg-[#999999] hover:text-white dark:hover:text-[#1a1a1a]
-                          transition-all duration-200">
+                   class="inline-block px-6 py-3 border border-black no-underline text-sm cursor-pointer text-center
+                          bg-black text-white hover:bg-gray-800 transition-all duration-200">
                     <?= svg_icon('chevron-left') ?> Anterior
                 </a>
             <?php endif; ?>
             <?php if ($page < $totalPages): ?>
                 <a href="/post?page=<?= $page + 1 ?>"
-                   class="inline-block px-6 py-3 border border-[#2d2d2d] dark:border-[#999999]
-                          no-underline text-sm cursor-pointer text-center
-                          bg-transparent text-[#2d2d2d] dark:text-[#999999]
-                          hover:bg-[#2d2d2d] dark:hover:bg-[#999999] hover:text-white dark:hover:text-[#1a1a1a]
-                          transition-all duration-200">
+                   class="inline-block px-6 py-3 border border-black no-underline text-sm cursor-pointer text-center
+                          bg-transparent text-black hover:bg-black hover:text-white transition-all duration-200">
                     Siguiente <?= svg_icon('chevron-right') ?>
                 </a>
             <?php endif; ?>
         </nav>
     <?php else: ?>
-        <p class="text-sm text-[#888888] dark:text-[#777777] italic">No hay poemas publicados aún.</p>
+        <p class="text-sm text-gray-500 dark:text-[#777777] italic">No hay poemas publicados aún.</p>
     <?php endif; ?>
 </article>

@@ -1,46 +1,71 @@
-/* base.css — Animación overlay + estilos base del diseño original */
+/* ═══════════════════════════════════════════════════════
+   Noir CMS — Design System & Base Styles
+   ═══════════════════════════════════════════════════════ */
+
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 img { max-width: 100%; height: auto; }
 
-/* Body: diseño original mater-natura.com */
+/* ─── Body ─── */
 body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
-    line-height: 21px;
-    color: #444;
-    background: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1b1b1b;
+    background: #f9f9f9;
 }
+
 body.theme-dark {
     background: #1a1a1a;
     color: #e0e0e0;
 }
+
 body.theme-light {
     background: #ffffff;
-    color: #1a1a1a;
+    color: #1b1b1b;
 }
 
-/* Overlay Nav */
-.overlay {
-    height: 100%; width: 0;
-    position: fixed; z-index: 99999; right: 0; top: 0;
-    overflow-x: hidden;
-    transition: width 0.5s ease;
+/* ─── Header & Footer ─── */
+.header-footer-bg {
+    background-color: #f2f2f2;
 }
-.overlay.open { width: 100%; }
-.closebtn {
-    position: absolute; top: 30px; right: 15%;
-    font-weight: 100; font-size: 45px;
-    cursor: pointer; line-height: 1;
-}
-.overlay .redes { display: flex; justify-content: center; margin-top: 20px; }
-.overlay .redes a { margin: 0; padding: 0; }
-@media (max-width: 600px) { .closebtn { right: 10%; font-size: 35px; } }
 
-/* Admin table */
+.theme-dark .header-footer-bg {
+    background-color: #222;
+}
+
+.text-gray-custom {
+    color: #666666;
+}
+
+/* ─── Typography ─── */
+.font-geist {
+    font-family: 'Geist', sans-serif;
+}
+
+/* ─── Breadcrumbs ─── */
+.breadcrumbs {
+    font-family: 'Geist', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 16px;
+}
+
+.breadcrumbs a {
+    color: #999;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: #000;
+}
+
+/* ─── Admin table ─── */
 .comment-table { width: 100%; border-collapse: collapse; }
 .comment-table th, .comment-table td { text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0; }
 .status-pending { color: #888888; font-weight: bold; }
@@ -155,4 +180,16 @@ body.theme-light {
 
 .theme-dark .post-texto hr {
     border-top-color: #333333;
+}
+
+/* ─── Home page content (legacy renderHtml) ─── */
+.page-content p {
+    margin-bottom: 0.8em;
+    line-height: 1.7;
+}
+
+/* ─── Post description with components ─── */
+.post-description p {
+    margin-bottom: 0.8em;
+    line-height: 1.7;
 }

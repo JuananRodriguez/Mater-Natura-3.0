@@ -28,12 +28,11 @@ body.theme-light {
 }
 
 /* ─── Header & Footer ─── */
-.header-footer-bg {
-    background-color: #f2f2f2;
+.theme-light .header-footer-bg {
+    background-color: #faf6f0;
 }
-
 .theme-dark .header-footer-bg {
-    background-color: #222;
+    background-color: #1b1b1b;
 }
 
 .text-gray-custom {
@@ -186,6 +185,35 @@ body.theme-light {
 
 .post-description img {
     cursor: pointer;
+}
+
+/* ─── Logo theme-aware ─── */
+.logo-text {
+    transition: color 0.2s ease;
+}
+.theme-light .logo-text {
+    color: #1b1b1b;
+}
+.theme-dark .logo-text {
+    color: #ffffff;
+}
+
+/* ─── Nav links theme-aware ─── */
+.theme-dark .nav-link,
+.theme-dark .nav-link svg {
+    color: #999999;
+}
+.theme-dark .nav-link:hover,
+.theme-dark .nav-link:hover svg {
+    color: #ffffff;
+}
+.theme-light .nav-link,
+.theme-light .nav-link svg {
+    color: #666666;
+}
+.theme-light .nav-link:hover,
+.theme-light .nav-link:hover svg {
+    color: #000000;
 }
 
 /* ─── Lightbox ─── */

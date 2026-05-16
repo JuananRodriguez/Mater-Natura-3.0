@@ -41,18 +41,42 @@ class PostController
         $perPage = MATER_POSTS_PER_PAGE;
         $offset = ($page - 1) * $perPage;
 
+        // ─── Filtro por tag ───
+        $tag = isset($_GET['tag']) ? trim($_GET['tag']) : '';
+        $templateFilter = match ($tag) {
+            'dia'   => 'light',
+            'noche' => 'dark',
+            default => null,
+        };
+
+        $where = "WHERE p.status = 'published' AND p.visibility = 'public'";
+        $params = [$perPage, $offset];
+
+        if ($templateFilter !== null) {
+            $where .= " AND p.template = ?";
+            array_unshift($params, $templateFilter); // al inicio: templateFilter, luego perPage, offset
+        }
+
         $posts = $this->db->fetchAll(
             "SELECT p.*, u.username as author_name
              FROM posts p
              JOIN users u ON p.user_id = u.id
-             WHERE p.status = 'published' AND p.visibility = 'public'
+             {$where}
              ORDER BY p.published_at DESC
              LIMIT ? OFFSET ?",
-            [$perPage, $offset]
+            $params
         );
 
+        $countWhere = "WHERE status = 'published' AND visibility = 'public'";
+        $countParams = [];
+        if ($templateFilter !== null) {
+            $countWhere .= " AND template = ?";
+            $countParams[] = $templateFilter;
+        }
+
         $total = $this->db->fetchOne(
-            "SELECT COUNT(*) as cnt FROM posts WHERE status = 'published' AND visibility = 'public'"
+            "SELECT COUNT(*) as cnt FROM posts {$countWhere}",
+            $countParams
         );
         $totalPosts = (int) ($total['cnt'] ?? 0);
         $totalPages = max(1, (int) ceil($totalPosts / $perPage));
@@ -82,22 +106,28 @@ class PostController
         $template->exposeToJs('totalPages', $totalPages);
         $template->exposeToJs('hasPrevPage', $page > 1);
         $template->exposeToJs('hasNextPage', $page < $totalPages);
+        $template->exposeToJs('currentTag', $tag);
 
-        // Rel prev/next para paginación
+        // Rel prev/next para paginación (con tag si aplica)
         $basePostUrl = rtrim(MATER_BASE_URL, '/') . '/post';
+        $tagParam = $tag !== '' ? 'tag=' . urlencode($tag) . '&' : '';
         if ($page > 1) {
-            $template->addAlternateLink('prev', $basePostUrl . '?page=' . ($page - 1));
+            $template->addAlternateLink('prev', $basePostUrl . '?' . $tagParam . 'page=' . ($page - 1));
         }
         if ($page < $totalPages) {
-            $template->addAlternateLink('next', $basePostUrl . '?page=' . ($page + 1));
+            $template->addAlternateLink('next', $basePostUrl . '?' . $tagParam . 'page=' . ($page + 1));
         }
 
+        // Determinar layout según tag
+        $layout = $templateFilter ?? 'dark';
+
         return $template->render('post-list', [
-            'posts' => $posts,
+            'posts'       => $posts,
             'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'totalPosts' => $totalPosts,
-        ]);
+            'totalPages'  => $totalPages,
+            'totalPosts'  => $totalPosts,
+            'currentTag'  => $tag,
+        ], $layout);
     }
 
     /**

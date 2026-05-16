@@ -791,6 +791,166 @@ class AdminController
         exit;
     }
 
+    // ─── Theme Editor (Apariencia) ───
+
+    /**
+     * GET /admin/apariencia — Formulario de personalización del theme
+     */
+    public function themeSettings(): string
+    {
+        $themeSettings = [
+            'logo'         => theme_setting('theme_logo') ?? $this->getDefaultLogo(),
+            'headerItems'  => theme_setting('theme_header_items') ?? $this->getDefaultHeaderItems(),
+            'footerItems'  => theme_setting('theme_footer_items') ?? $this->getDefaultFooterItems(),
+            'footer'       => theme_setting('theme_footer') ?? $this->getDefaultFooter(),
+        ];
+
+        return $this->renderAdmin('theme-settings', [
+            'themeSettings' => $themeSettings,
+            'currentNav'    => 'theme',
+        ]);
+    }
+
+    /**
+     * POST /admin/apariencia — Guardar ajustes del theme
+     */
+    public function saveThemeSettings(array $data): void
+    {
+        if (!$this->security->validateCsrfToken($data['_csrf_token'] ?? '')) {
+            $_SESSION['admin_error'] = 'Token de seguridad inválido.';
+            header('Location: /admin/apariencia');
+            exit;
+        }
+
+        // ── Logo ──
+        $logoType = $data['logo_type'] ?? 'text';
+        if ($logoType === 'image' && !empty($_FILES['logo_image']) && $_FILES['logo_image']['error'] === UPLOAD_ERR_OK) {
+            $upload = new \MaterNatura\Core\UploadHandler($this->security);
+            $result = $upload->upload($_FILES['logo_image'], 'theme-logo');
+            if ($result['success']) {
+                save_theme_setting($this->db, 'theme_logo', [
+                    'type'   => 'image',
+                    'path'   => $result['relativePath'],
+                    'alt'    => trim($data['logo_alt'] ?? MATER_SITE_NAME),
+                    'width'  => $result['width'],
+                    'height' => $result['height'],
+                ]);
+            } else {
+                $_SESSION['admin_error'] = 'Error al subir el logo: ' . $result['error'];
+                header('Location: /admin/apariencia');
+                exit;
+            }
+        } elseif ($logoType === 'text') {
+            save_theme_setting($this->db, 'theme_logo', [
+                'type' => 'text',
+                'text' => trim($data['logo_text'] ?: MATER_SITE_NAME),
+            ]);
+        }
+
+        // ── Items de Header ──
+        $headerItems = $this->buildItemsFromPost($data, 'header');
+        save_theme_setting($this->db, 'theme_header_items', $headerItems);
+
+        // ── Items de Footer ──
+        $footerItems = $this->buildItemsFromPost($data, 'footer');
+        save_theme_setting($this->db, 'theme_footer_items', $footerItems);
+
+        // ── Footer text ──
+        save_theme_setting($this->db, 'theme_footer', [
+            'text' => trim($data['footer_text'] ?? ''),
+        ]);
+
+        $_SESSION['admin_success'] = 'Ajustes del theme guardados correctamente.';
+        header('Location: /admin/apariencia');
+        exit;
+    }
+
+    /**
+     * Construye el array de items (nav + social unificados) desde el POST.
+     */
+    private function buildItemsFromPost(array $data, string $prefix): array
+    {
+        $items = [];
+        $types   = $data[$prefix . '_type'] ?? [];
+        $kept    = $data[$prefix . '_keep'] ?? [];
+        $labels  = $data[$prefix . '_label'] ?? [];
+        $urls    = $data[$prefix . '_url'] ?? [];
+        $targets = $data[$prefix . '_target'] ?? [];
+        $platforms = $data[$prefix . '_platform'] ?? [];
+        $socialLabels = $data[$prefix . '_social_label'] ?? [];
+
+        foreach ($kept as $i => $keep) {
+            $type = $types[$i] ?? 'nav';
+            if ($type === 'nav') {
+                $label = trim($labels[$i] ?? '');
+                $url   = trim($urls[$i] ?? '');
+                if ($label === '' || $url === '') continue;
+                $items[] = [
+                    'id'     => 'item_' . bin2hex(random_bytes(4)),
+                    'type'   => 'nav',
+                    'label'  => $label,
+                    'url'    => $url,
+                    'target' => ($targets[$i] ?? '_self') === '_blank' ? '_blank' : '_self',
+                ];
+            } else {
+                $url = trim($urls[$i] ?? '');
+                if ($url === '') continue;
+                $items[] = [
+                    'id'       => 'item_' . bin2hex(random_bytes(4)),
+                    'type'     => 'social',
+                    'platform' => $platforms[$i] ?? 'custom',
+                    'url'      => $url,
+                    'label'    => trim($socialLabels[$i] ?? ''),
+                ];
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Valores por defecto del logo
+     */
+    private function getDefaultLogo(): array
+    {
+        return [
+            'type' => 'text',
+            'text' => 'MATER NATURA',
+        ];
+    }
+
+    /**
+     * Valores por defecto de items del header
+     */
+    private function getDefaultHeaderItems(): array
+    {
+        return [
+            ['id' => 'item_1', 'type' => 'nav', 'label' => 'día',   'url' => '/post?tag=dia',   'target' => '_self'],
+            ['id' => 'item_2', 'type' => 'nav', 'label' => 'noche', 'url' => '/post?tag=noche', 'target' => '_self'],
+            ['id' => 'item_3', 'type' => 'nav', 'label' => 'info',  'url' => '/info',           'target' => '_self'],
+        ];
+    }
+
+    /**
+     * Valores por defecto de items del footer
+     */
+    private function getDefaultFooterItems(): array
+    {
+        return [
+            ['id' => 'item_4', 'type' => 'social', 'platform' => 'instagram', 'url' => 'https://www.instagram.com/mater_natura/', 'label' => 'Instagram'],
+        ];
+    }
+
+    /**
+     * Valores por defecto del footer
+     */
+    private function getDefaultFooter(): array
+    {
+        return [
+            'text' => MATER_SITE_NAME,
+        ];
+    }
+
     // ─── Privados ───
 
     /**

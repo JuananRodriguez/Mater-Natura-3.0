@@ -1398,6 +1398,110 @@ select.brutalist-input {
     }
 }
 
+/* ═══════════════════════════════════════════════
+   Theme Settings — Tabs
+   ═══════════════════════════════════════════════ */
+.theme-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+}
+
+.theme-tab-btn {
+    flex: 1;
+    padding: 12px 24px 10px;
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    background: transparent;
+    color: #999;
+    position: relative;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.theme-tab-btn:hover {
+    color: #555;
+    border-bottom-color: #ccc;
+}
+
+.theme-tab-btn.active {
+    color: #000;
+    font-weight: 600;
+    border-bottom-color: #000;
+}
+
+.theme-tab-btn.active:hover {
+    color: #000;
+    border-bottom-color: #000;
+}
+
+.theme-tab-panel {
+    display: block;
+}
+
+.theme-tab-panel[x-cloak] {
+    display: none !important;
+}
+
+/* Theme item row */
+.theme-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+}
+
+.theme-item:hover {
+    border-color: #ccc;
+}
+
+.theme-item-drag {
+    cursor: grab;
+    color: #bbb;
+    padding-top: 8px;
+    font-size: 18px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.theme-item-fields {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.theme-item .settings-field {
+    margin: 0;
+}
+
+.theme-item .settings-field label {
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+.theme-item .brutalist-input {
+    font-size: 14px;
+    padding: 6px 8px;
+}
+
+.theme-item-remove {
+    margin-top: 20px;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
 /* Utility: visually hidden but clickable (for file inputs, etc.) */
 .sr-only {
     position: absolute;

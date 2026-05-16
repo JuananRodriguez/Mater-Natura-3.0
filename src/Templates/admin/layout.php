@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Geist:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/assets/css/admin.css?v=3">
+    <link rel="stylesheet" href="/assets/css/admin.css?v=5">
     <link rel="stylesheet" href="/assets/quill/quill.snow.css">
 </head>
 <body class="theme-light admin-body">
@@ -37,6 +37,7 @@
 
                 <?php if (($user['role'] ?? '') === 'admin'): ?>
                 <a href="/admin/usuarios" class="sidebar-link<?= ($currentNav ?? '') === 'users' ? ' active' : '' ?>"><?= svg_icon('people') ?> Usuarios</a>
+                <a href="/admin/apariencia" class="sidebar-link<?= ($currentNav ?? '') === 'theme' ? ' active' : '' ?>"><?= svg_icon('mater-natura') ?> Apariencia</a>
                 <a href="/admin/plugins" class="sidebar-link<?= ($currentNav ?? '') === 'plugins' ? ' active' : '' ?>"><?= svg_icon('puzzle') ?> Plugins</a>
                 <a href="/admin/ajustes" class="sidebar-link<?= ($currentNav ?? '') === 'settings' ? ' active' : '' ?>"><?= svg_icon('cog') ?> Ajustes</a>
                 <?php endif; ?>

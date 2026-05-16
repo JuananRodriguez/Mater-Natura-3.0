@@ -5,6 +5,10 @@
     </header>
 
     <div class="page-content prose" itemprop="text">
-        <?= renderHtml($page['content']) ?>
+        <?php if (!empty($componentsHtml)): ?>
+            <?= $componentsHtml ?>
+        <?php else: ?>
+            <?= renderHtml($page['content']) ?>
+        <?php endif; ?>
     </div>
 </article>

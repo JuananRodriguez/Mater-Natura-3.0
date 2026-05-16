@@ -9,6 +9,11 @@
             <span class="unsaved-text" x-show="hasChanges" style="display:none">Cambios sin guardar</span>
             <button type="submit" form="post-form" class="brutalist-btn-secondary" name="action" value="draft">Guardar Borrador</button>
             <button type="submit" form="post-form" class="brutalist-btn-primary" name="action" value="publish"><?= $post ? 'Actualizar' : 'Publicar' ?></button>
+            <?php if ($post): ?>
+                <a href="/admin/componentes/editar?type=post&id=<?= $post->id ?>" class="brutalist-btn-link">
+                    <?= svg_icon('puzzle') ?> Editor de bloques
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 

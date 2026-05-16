@@ -19,7 +19,7 @@
         'themeItems' => $themeHeaderItems,
     ]) ?>
 
-    <main class="pt-20 pb-8 flex-1" style="max-width:724px;width:100%;margin:0 auto;">
+    <main class="pt-20 pb-8 flex-1" style="max-width:<?= $mainMaxWidth ?? '724px' ?>;width:100%;margin:0 auto;">
         <?= $content ?>
     </main>
 

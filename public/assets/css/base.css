@@ -282,3 +282,72 @@ body.theme-light {
 .lightbox-overlay .lightbox-close:hover {
     opacity: 1;
 }
+
+/* ═══════════════════════════════════════════════════════
+   Masonry Grid — Post List Image Layout
+   ═══════════════════════════════════════════════════════ */
+
+.masonry-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.masonry-grid > * {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .masonry-grid > * {
+        width: calc((100% - 0.75rem) / 2);
+    }
+}
+
+@media (min-width: 1024px) {
+    .masonry-grid > * {
+        width: calc((100% - 1.5rem) / 3);
+    }
+}
+
+.masonry-card img {
+    transition: transform 0.4s ease;
+}
+
+.masonry-card:hover img {
+    transform: scale(1.03);
+}
+
+/* ─── Overlay hover centrado ─── */
+.masonry-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    padding: 1rem;
+}
+
+.masonry-card:hover .masonry-overlay {
+    opacity: 1;
+}
+
+/* Dark theme overlay */
+.theme-dark .masonry-overlay {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.theme-dark .masonry-title {
+    color: #ffffff;
+}
+
+/* Light theme overlay */
+.theme-light .masonry-overlay {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.theme-light .masonry-title {
+    color: #000000;
+}

@@ -40,7 +40,7 @@ class PostController
             default => null,
         };
 
-        $where = "WHERE p.status = 'published' AND p.visibility = 'public'";
+        $where = "WHERE p.status = 'published' AND p.visibility = 'public' AND p.image_url IS NOT NULL AND p.image_url != ''";
         $params = [];
 
         if ($templateFilter !== null) {
@@ -94,6 +94,7 @@ class PostController
             'posts'      => $posts,
             'totalPosts' => (int)$totalPosts,
             'tag'        => $tag,
+            'mainMaxWidth' => '1200px',
         ], $layout);
     }
 
@@ -112,7 +113,7 @@ class PostController
             default => null,
         };
 
-        $where = "WHERE p.status = 'published' AND p.visibility = 'public'";
+        $where = "WHERE p.status = 'published' AND p.visibility = 'public' AND p.image_url IS NOT NULL AND p.image_url != ''";
         $params = [];
 
         if ($templateFilter !== null) {

@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<article class="max-w-4xl mx-auto px-4 md:px-12 lg:px-24 py-12"
+<article class="px-4 md:px-8 py-12"
          x-data="{
     offset: 6,
     limit: 6,
@@ -57,19 +57,14 @@
             });
     }
 }">
-    <header class="mb-8">
-        <h1 class="text-[28px] font-normal text-black dark:text-[#e0e0e0] mb-1">Poemas</h1>
-        <p class="text-sm text-gray-500 dark:text-[#777777]"><?= $totalPosts ?> poemas publicados</p>
-    </header>
-
     <?php if ($posts): ?>
-        <ul class="posts-list list-none p-0 m-0" x-ref="list">
+        <div class="masonry-grid" x-ref="list">
             <?php foreach ($posts as $i => $post): ?>
                 <?= $this->renderPostItem($post, $i === 0) ?>
             <?php endforeach; ?>
-        </ul>
+        </div>
 
-        <!-- Sentinela para IntersectionObserver -->
+        <!-- Sentinel para IntersectionObserver -->
         <div x-ref="sentinel"
              class="flex justify-center py-8 text-sm text-gray-500 dark:text-[#777777]"
              x-show="hasMore">
@@ -79,6 +74,6 @@
         </div>
 
     <?php else: ?>
-        <p class="text-sm text-gray-500 dark:text-[#777777] italic">No hay poemas publicados aún.</p>
+        <p class="text-sm text-gray-500 dark:text-[#777777] italic text-center">No hay poemas publicados aún.</p>
     <?php endif; ?>
 </article>

@@ -183,3 +183,55 @@ body.theme-light {
     margin-bottom: 0.8em;
     line-height: 1.7;
 }
+
+.post-description img {
+    cursor: pointer;
+}
+
+/* ─── Lightbox ─── */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: zoom-out;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-overlay.active {
+    display: flex;
+}
+
+.lightbox-overlay img {
+    max-width: 92vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    cursor: default;
+}
+
+.lightbox-overlay .lightbox-close {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    color: #fff;
+    font-size: 2.25rem;
+    cursor: pointer;
+    z-index: 10000;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+    font-family: 'Inter', sans-serif;
+}
+
+.lightbox-overlay .lightbox-close:hover {
+    opacity: 1;
+}

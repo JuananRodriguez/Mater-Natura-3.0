@@ -11,7 +11,7 @@
 
     <!-- Post Description -->
     <?php if (!empty($post['description'])): ?>
-    <div class="text-sm text-gray-500 leading-relaxed mb-8 max-w-3xl font-titillium" itemprop="description">
+    <div class="text-sm text-gray-500 leading-relaxed mb-8 max-w-3xl font-titillium post-description" itemprop="description">
         <?php if (!empty($componentsHtml)): ?>
             <?= $componentsHtml ?>
         <?php else: ?>
@@ -25,10 +25,11 @@
     <div class="w-full flex justify-center mb-6">
         <img src="/media/<?= $escape(ltrim($post['image_url'], '/')) ?>"
              alt="<?= $escape($post['title']) ?>"
-             class="max-w-full h-auto object-contain"
+             class="max-w-full h-auto object-contain cursor-pointer"
              style="max-height: 70vh;"
              itemprop="image"
-             loading="lazy">
+             loading="lazy"
+             data-lightbox>
     </div>
     <?php endif; ?>
 

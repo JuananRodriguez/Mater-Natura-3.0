@@ -35,6 +35,8 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
 
+                <a href="/admin/catalog" class="sidebar-link<?= ($currentNav ?? '') === 'catalog' ? ' active' : '' ?>"><?= svg_icon('file') ?> Catálogo</a>
+
                 <?php if (($user['role'] ?? '') === 'admin'): ?>
                 <a href="/admin/usuarios" class="sidebar-link<?= ($currentNav ?? '') === 'users' ? ' active' : '' ?>"><?= svg_icon('people') ?> Usuarios</a>
                 <a href="/admin/apariencia" class="sidebar-link<?= ($currentNav ?? '') === 'theme' ? ' active' : '' ?>"><?= svg_icon('mater-natura') ?> Apariencia</a>

@@ -152,6 +152,12 @@ class Router
             $controller->postDelete($id);
         });
 
+        $this->get('/admin/posts/search', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
+            $controller->searchPosts();
+        });
+
         // Admin pages
         $this->get('/admin/pages', function () {
             $this->auth->requireAuth();
@@ -217,6 +223,25 @@ class Router
             }
             $controller = new \MaterNatura\Controllers\AdminController($this->db, $this->security, $this->auth, $this->pluginManager);
             $controller->pluginDeactivate($slug);
+        });
+
+        // Admin catalog
+        $this->get('/admin/catalog', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\CatalogController($this->db, $this->security, $this->auth);
+            echo $controller->form();
+        });
+
+        $this->post('/admin/catalog/generate', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\CatalogController($this->db, $this->security, $this->auth);
+            $controller->generate();
+        });
+
+        $this->get('/admin/catalog/filter', function () {
+            $this->auth->requireAuth();
+            $controller = new \MaterNatura\Controllers\CatalogController($this->db, $this->security, $this->auth);
+            $controller->filterByMode();
         });
 
         // Admin settings (solo administradores)

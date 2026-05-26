@@ -114,6 +114,18 @@
                 </div>
             </div>
 
+            <!-- Reference -->
+            <div class="settings-section">
+                <h3 class="settings-section-title">Referencia</h3>
+                <div class="settings-field">
+                    <label for="reference">Número de referencia (catálogo)</label>
+                    <input type="text" id="reference" name="reference"
+                           value="<?= $escape($post->reference ?? '') ?>"
+                           placeholder="Ej: 001, A-01, etc."
+                           class="brutalist-input">
+                </div>
+            </div>
+
             <!-- SEO -->
             <div class="settings-section" style="flex:1;border-bottom:none">
                 <h3 class="settings-section-title">Optimización SEO</h3>

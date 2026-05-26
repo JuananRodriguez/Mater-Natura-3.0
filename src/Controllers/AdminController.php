@@ -102,6 +102,7 @@ class AdminController
         $id = !empty($data['id']) ? (int) $data['id'] : null;
         $title = trim($data['title'] ?? '');
         $slug = trim($data['slug'] ?? '');
+        $reference = trim($data['reference'] ?? '');
         $description = trim($data['description'] ?? '');
         $template = $data['template'] ?? 'dark';
         $status = ($data['action'] ?? '') === 'publish' ? 'published' : 'draft';
@@ -123,6 +124,7 @@ class AdminController
         $errors = [];
         if ($title === '') $errors[] = 'El título es obligatorio.';
         if ($description === '') $errors[] = 'La descripción es obligatoria.';
+        if ($reference === '') $errors[] = 'La referencia es obligatoria.';
 
         // Generar slug si está vacío
         if ($slug === '') {
@@ -198,6 +200,7 @@ class AdminController
         $postData = [
             'title' => $title,
             'slug' => $slug,
+            'reference' => $reference,
             'description' => $description,
             'template' => $template,
             'status' => $status,
@@ -258,6 +261,87 @@ class AdminController
         $_SESSION['admin_success'] = 'Post eliminado correctamente.';
         header('Location: /admin/posts');
         exit;
+    }
+
+    /**
+     * GET /admin/posts/search — Busca posts por título o referencia (AJAX)
+     */
+    public function searchPosts(): void
+    {
+        $this->auth->requireAuth();
+
+        $q = trim($_GET['q'] ?? '');
+
+        header('Content-Type: text/html; charset=utf-8');
+
+        if ($q === '') {
+            // Devolver todas las filas
+            $posts = $this->db->fetchAll(
+                "SELECT p.*, u.username as author_name
+                 FROM posts p
+                 JOIN users u ON p.user_id = u.id
+                 ORDER BY p.created_at DESC
+                 LIMIT 20"
+            );
+        } else {
+            $like = '%' . $q . '%';
+            $posts = $this->db->fetchAll(
+                "SELECT p.*, u.username as author_name
+                 FROM posts p
+                 JOIN users u ON p.user_id = u.id
+                 WHERE p.title LIKE ? OR p.reference LIKE ?
+                 ORDER BY p.created_at DESC
+                 LIMIT 20",
+                [$like, $like]
+            );
+        }
+
+        $escape = [$this->security, 'escapeHtml'];
+
+        if (empty($posts)) {
+            echo '<tr><td colspan="8" class="empty-search">No se encontraron posts con «' . $this->security->escapeHtml($q) . '».</td></tr>';
+            return;
+        }
+
+        foreach ($posts as $p) {
+            $pId = $p['id'];
+            $pTitle = $p['title'];
+            $pSlug = $p['slug'];
+            $pRef = $p['reference'] ?? '';
+            $pStatus = $p['status'];
+            $pVisibility = $p['visibility'] ?? 'public';
+            $pTemplate = $p['template'];
+            $pCreated = $p['created_at'];
+            ?>
+            <tr>
+                <td class="cell-title"><?= $escape($pTitle) ?></td>
+                <td class="cell-ref"><?= $pRef ? $escape($pRef) : '<span class="no-ref">—</span>' ?></td>
+                <td class="cell-slug"><a href="/<?= rawurlencode($pSlug) ?>" target="_blank" rel="noopener"><?= $escape($pSlug) ?></a></td>
+                <td><span class="badge badge-<?= $pStatus ?>"><?= $pStatus ?></span></td>
+                <td>
+                    <?php if ($pVisibility === 'private'): ?>
+                        <span class="badge badge-private">Privado</span>
+                    <?php elseif ($pVisibility === 'password'): ?>
+                        <span class="badge badge-password">Protegido</span>
+                    <?php else: ?>
+                        <span class="badge badge-public">Público</span>
+                    <?php endif; ?>
+                </td>
+                <td><?= $escape($pTemplate) ?></td>
+                <td><?= date('d/m/Y', strtotime($pCreated)) ?></td>
+                <td class="cell-actions">
+                    <a href="/admin/posts/editar?id=<?= $pId ?>" class="btn-sm"><?= svg_icon('pencil') ?> Editar</a>
+                    <form method="POST" action="/admin/posts/eliminar"
+                          onsubmit="return confirm('¿Eliminar este post?')"
+                          style="display:inline">
+                        <input type="hidden" name="_csrf_token" value="<?= $this->security->generateCsrfToken() ?>">
+                        <input type="hidden" name="id" value="<?= $pId ?>">
+                        <button type="submit" class="btn-sm btn-danger"><?= svg_icon('trash') ?> Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <?php
+        }
     }
 
     // ─── Pages CRUD ───

@@ -124,6 +124,76 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 })();
 
+/* ─── Swipe Gesture Navigation (Prev/Next Post) ─── */
+(function() {
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touchStartTime = 0;
+    var isHorizontalSwipe = false;
+
+    document.addEventListener('touchstart', function(e) {
+        var touch = e.changedTouches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = Date.now();
+        isHorizontalSwipe = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+        if (isHorizontalSwipe) {
+            e.preventDefault();
+            return;
+        }
+
+        var touch = e.changedTouches[0];
+        var deltaX = touch.clientX - touchStartX;
+        var deltaY = touch.clientY - touchStartY;
+        var elapsed = Date.now() - touchStartTime;
+
+        if (elapsed > 400) return;
+
+        // Si ya es claramente horizontal, marcar para bloquear scroll
+        if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > Math.abs(deltaY) * 2) {
+            isHorizontalSwipe = true;
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+        // Ignorar si el lightbox está abierto
+        var overlay = document.querySelector('.lightbox-overlay');
+        if (overlay && overlay.classList.contains('active')) return;
+
+        // Ignorar si el usuario está escribiendo
+        var tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+
+        var touch = e.changedTouches[0];
+        var deltaX = touch.clientX - touchStartX;
+        var deltaY = touch.clientY - touchStartY;
+        var elapsed = Date.now() - touchStartTime;
+
+        // Umbral mínimo: 50px de recorrido horizontal, menos de 400ms
+        if (Math.abs(deltaX) < 50 || elapsed > 400) return;
+
+        // Debe ser claramente horizontal (horizontal > vertical * 2)
+        if (Math.abs(deltaX) < Math.abs(deltaY) * 2) return;
+
+        e.preventDefault();
+
+        var label = deltaX > 0 ? 'Post anterior' : 'Siguiente post';
+        var link = document.querySelector('a[aria-label="' + label + '"]');
+        if (!link || !link.href) return;
+
+        // Guardar estado del lightbox si procede
+        if (overlay && overlay.classList.contains('active')) {
+            sessionStorage.setItem('lightboxOpen', 'true');
+        }
+
+        window.location.href = link.href;
+    }, { passive: false });
+})();
+
 /* ─── Restaurar lightbox tras navegación por teclado ─── */
 (function() {
     if (sessionStorage.getItem('lightboxOpen') === 'true') {

@@ -82,8 +82,16 @@ class AdminController
             $post = $row ? \MaterNatura\Models\Post::fromRow($row) : null;
         }
 
+        // Restaurar datos del formulario si hay error de validación previo
+        $formData = null;
+        if (isset($_SESSION['admin_form_data'])) {
+            $formData = $_SESSION['admin_form_data'];
+            unset($_SESSION['admin_form_data']);
+        }
+
         return $this->renderAdmin('post-form', [
             'post' => $post,
+            'formData' => $formData,
             'contentFullWidth' => true,
             'currentNav' => 'posts',
         ]);
@@ -91,8 +99,21 @@ class AdminController
 
     public function postSave(array $data): void
     {
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        $jsonExit = function(array $payload, int $httpStatus = 200) use ($isAjax): void {
+            if ($isAjax) {
+                http_response_code($httpStatus);
+                header('Content-Type: application/json');
+                echo json_encode($payload);
+                exit;
+            }
+        };
+
         // Validar CSRF
         if (!$this->security->validateCsrfToken($data['_csrf_token'] ?? '')) {
+            $jsonExit(['success' => false, 'errors' => ['Token de seguridad inválido. Inténtalo de nuevo.']], 403);
             $_SESSION['admin_error'] = 'Token de seguridad inválido. Inténtalo de nuevo.';
             $_SESSION['admin_error_type'] = 'csrf';
             header('Location: /admin/posts/editar' . (!empty($data['id']) ? '?id=' . (int)$data['id'] : ''));
@@ -123,7 +144,6 @@ class AdminController
         // Validar campos requeridos
         $errors = [];
         if ($title === '') $errors[] = 'El título es obligatorio.';
-        if ($description === '') $errors[] = 'La descripción es obligatoria.';
         if ($reference === '') $errors[] = 'La referencia es obligatoria.';
 
         // Generar slug si está vacío
@@ -157,6 +177,7 @@ class AdminController
         }
 
         if (!empty($errors)) {
+            $jsonExit(['success' => false, 'errors' => $errors]);
             $_SESSION['admin_error'] = implode(' ', $errors);
             $_SESSION['admin_form_data'] = $data;
             header('Location: /admin/posts/editar' . ($id ? '?id=' . $id : ''));
@@ -184,7 +205,9 @@ class AdminController
                     $upload->delete($oldImageUrl);
                 }
             } else {
+                $jsonExit(['success' => false, 'errors' => [$result['error']]]);
                 $_SESSION['admin_error'] = $result['error'];
+                $_SESSION['admin_form_data'] = $data;
                 header('Location: /admin/posts/editar' . ($id ? '?id=' . $id : ''));
                 exit;
             }
@@ -236,6 +259,7 @@ class AdminController
             'action' => $id ? 'update' : 'create',
         ]);
 
+        $jsonExit(['success' => true, 'redirect' => '/admin/posts']);
         $_SESSION['admin_success'] = 'Post guardado correctamente.';
         header('Location: /admin/posts');
         exit;

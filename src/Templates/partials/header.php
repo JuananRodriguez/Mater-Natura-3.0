@@ -8,7 +8,7 @@
 $logo  = $themeLogo ?? ['type' => 'text', 'text' => 'MATER NATURA'];
 $items = $themeItems ?? [];
 ?>
-<header class="fixed top-0 left-0 right-0 z-50 px-8 py-4 flex items-center justify-between header-footer-bg">
+<header class="fixed top-0 left-0 right-0 z-50 px-8 py-4 flex items-center justify-between header-footer-bg" style="view-transition-name:site-header">
     <!-- Logo -->
     <a href="/" class="text-xl font-bold tracking-widest uppercase no-underline logo-text">
         <?php if (($logo['type'] ?? 'text') === 'image' && !empty($logo['path'])): ?>

@@ -19,7 +19,7 @@
         'themeItems' => $themeHeaderItems,
     ]) ?>
 
-    <main class="pt-20 pb-8 flex-1" style="max-width:<?= $mainMaxWidth ?? '724px' ?>;width:100%;margin:0 auto;">
+    <main class="pt-20 pb-8 flex-1" style="view-transition-name:post-content;max-width:<?= $mainMaxWidth ?? '724px' ?>;width:100%;margin:0 auto;">
         <?= $content ?>
     </main>
 
@@ -31,7 +31,7 @@
     ]) ?>
 
     <script src='/assets/js/alpine.min.js' defer></script>
-    <script src='/assets/js/app.js?v=3' defer></script>
+    <script src='/assets/js/app.js?v=4' defer></script>
     <?php if (isset($pluginManager)) {
         $footerResults = $pluginManager->executeHook('page.footer', ['escape' => $escape]);
         echo implode("\n", array_filter($footerResults, 'is_string'));

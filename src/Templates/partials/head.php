@@ -1,6 +1,7 @@
 <?php declare(strict_types=1); ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var d=sessionStorage.getItem('navDirection');if(d==='back'||d==='forward'){document.documentElement.className='nav-'+d;sessionStorage.removeItem('navDirection');}})();</script>
 <?= $this->renderMetaTags() ?>
 <link rel="icon" type="image/svg+xml" href="/favicon.ico">
 
@@ -11,4 +12,4 @@
 
 <!-- Tailwind CSS (estático, compilado localmente) -->
 <link rel="stylesheet" href="/assets/css/tailwind.css">
-<link rel="stylesheet" href="/assets/css/base.css?v=7">
+<link rel="stylesheet" href="/assets/css/base.css?v=10">

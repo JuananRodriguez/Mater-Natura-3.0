@@ -17,21 +17,43 @@
     <?php endif; ?>
 
     <!-- Post Meta Info: title + reference -->
-    <div class="flex justify-between items-end mb-4">
-        <h1 class="text-lg font-medium text-gray-800 m-0" itemprop="headline">
+    <div class="flex justify-between items-start mb-4 gap-4">
+        <h1 class="text-base md:text-lg font-medium m-0 post-title" itemprop="headline">
             <?= $escape($post['title']) ?>
         </h1>
-        <span class="text-sm font-bold text-gray-500">ref. <?= $post['id'] ?></span>
+        <span class="text-sm font-bold post-ref whitespace-nowrap shrink-0">ref. <?= $post['id'] ?></span>
     </div>
 
-    <!-- Post Description -->
+    <!-- Post Description (accordion: hidden by default) -->
     <?php if (!empty($post['description'])): ?>
-    <div class="text-sm text-gray-500 leading-relaxed mb-8 max-w-3xl font-titillium post-description" itemprop="description">
-        <?php if (!empty($componentsHtml)): ?>
-            <?= $componentsHtml ?>
-        <?php else: ?>
-            <?= renderHtml($post['description']) ?>
-        <?php endif; ?>
+    <div class="mb-8 post-details-accordion" x-data="{ open: false }">
+        <button @click="open = !open"
+                class="post-details-btn"
+                :class="{ 'is-open': open }"
+                aria-label="Alternar detalles">
+            <span x-text="open ? 'Ocultar' : 'Detalles'"></span>
+            <svg class="post-details-chevron" :class="{ 'rotated': open }"
+                 width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="text-sm leading-relaxed max-w-3xl font-titillium mt-3 post-description"
+             itemprop="description">
+            <?php if (!empty($componentsHtml)): ?>
+                <?= $componentsHtml ?>
+            <?php else: ?>
+                <?= renderHtml($post['description']) ?>
+            <?php endif; ?>
+        </div>
     </div>
     <?php endif; ?>
 

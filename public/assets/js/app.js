@@ -27,6 +27,33 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 
+/* ─── Navigation Helper (stores direction for View Transitions) ─── */
+(function() {
+    window.__navigateTo = function(url, direction) {
+        if (!url) return;
+        if (direction === 'prev' || direction === 'back') {
+            sessionStorage.setItem('navDirection', 'back');
+        } else {
+            sessionStorage.setItem('navDirection', 'forward');
+        }
+        // Guardar estado del lightbox si está abierto
+        var overlay = document.querySelector('.lightbox-overlay');
+        if (overlay && overlay.classList.contains('active')) {
+            sessionStorage.setItem('lightboxOpen', 'true');
+        }
+        window.location.href = url;
+    };
+
+    // Click delegation on nav links (prev/next posts)
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a[aria-label="Post anterior"], a[aria-label="Siguiente post"]');
+        if (!link) return;
+        e.preventDefault();
+        var dir = link.getAttribute('aria-label') === 'Post anterior' ? 'back' : 'forward';
+        window.__navigateTo(link.href, dir);
+    });
+})();
+
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -114,13 +141,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         var link = getNavLink(isLeft ? 'prev' : 'next');
         if (!link || !link.href) return;
 
-        // Si el lightbox está abierto, guardar estado antes de navegar
-        var overlay = document.querySelector('.lightbox-overlay');
-        if (overlay && overlay.classList.contains('active')) {
-            sessionStorage.setItem('lightboxOpen', 'true');
-        }
-
-        window.location.href = link.href;
+        window.__navigateTo(link.href, isLeft ? 'back' : 'forward');
     });
 })();
 
@@ -185,12 +206,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         var link = document.querySelector('a[aria-label="' + label + '"]');
         if (!link || !link.href) return;
 
-        // Guardar estado del lightbox si procede
-        if (overlay && overlay.classList.contains('active')) {
-            sessionStorage.setItem('lightboxOpen', 'true');
-        }
-
-        window.location.href = link.href;
+        window.__navigateTo(link.href, deltaX > 0 ? 'back' : 'forward');
     }, { passive: false });
 })();
 

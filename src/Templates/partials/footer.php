@@ -10,7 +10,7 @@ $items = $themeItems ?? [];
 $footer = $themeFooter ?? [];
 $footerText = $footer['text'] ?? '';
 ?>
-<footer class="w-full py-4 px-8 flex justify-between items-center header-footer-bg">
+<footer class="w-full py-4 px-8 flex justify-between items-center header-footer-bg" style="view-transition-name:site-footer">
     <!-- Logo -->
     <a href="/" class="text-lg font-bold tracking-widest uppercase no-underline logo-text">
         <?php if (($logo['type'] ?? 'text') === 'image' && !empty($logo['path'])): ?>

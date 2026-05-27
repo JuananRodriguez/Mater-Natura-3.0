@@ -31,7 +31,7 @@
     ]) ?>
 
     <script src='/assets/js/alpine.min.js' defer></script>
-    <script src='/assets/js/app.js?v=4' defer></script>
+    <script src='/assets/js/app.js?v=5' defer></script>
     <?php if (isset($pluginManager)) {
         $footerResults = $pluginManager->executeHook('page.footer', ['escape' => $escape]);
         echo implode("\n", array_filter($footerResults, 'is_string'));

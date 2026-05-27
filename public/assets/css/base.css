@@ -502,3 +502,11 @@ html.nav-back::view-transition-new(post-content) {
     animation: none !important;
   }
 }
+
+/* ─── Protección de imágenes: desactivar arrastre y selección ─── */
+img {
+  -webkit-user-drag: none;
+  -moz-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

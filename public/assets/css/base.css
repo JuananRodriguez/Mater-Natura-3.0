@@ -483,16 +483,16 @@ html.nav-back::view-transition-new(post-content) {
 }
 
 @keyframes vt-slide-out-left {
-  to { transform: translateX(-25%); opacity: 0.5; }
+  to { transform: translateX(-100%); opacity: 0; }
 }
 @keyframes vt-slide-in-from-right {
-  from { transform: translateX(25%); opacity: 0.5; }
+  from { transform: translateX(100%); opacity: 0; }
 }
 @keyframes vt-slide-out-right {
-  to { transform: translateX(25%); opacity: 0.5; }
+  to { transform: translateX(100%); opacity: 0; }
 }
 @keyframes vt-slide-in-from-left {
-  from { transform: translateX(-25%); opacity: 0.5; }
+  from { transform: translateX(-100%); opacity: 0; }
 }
 
 /* Reduced motion: no animations */
